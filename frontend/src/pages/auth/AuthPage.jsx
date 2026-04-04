@@ -115,12 +115,25 @@ export default function AuthPage({ onAuthSuccess }) {
     return (
       <div className="auth-root">
         <div className="auth-confirm-wrap">
-          <div className="auth-confirm-box">
-            <div className="confirm-mail-icon">✉</div>
+          <div className="auth-confirm-card">
+            <div className="auth-confirm-icon">
+              <svg width="64" height="64" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M4 4H20C21.1 4 22 4.9 22 6V18C22 19.1 21.1 20 20 20H4C2.9 20 2 19.1 2 18V6C2 4.9 2.9 4 4 4Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                <path d="M22 6L12 13L2 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </div>
             <h2>Check your inbox</h2>
-            <p>We sent a confirmation link to<br /><strong>{sentTo}</strong></p>
-            <p className="confirm-sub">Click the link in the email to activate your account, then sign in below.</p>
-            <button className="a-btn-primary" onClick={() => reset("login")}>Back to Sign In</button>
+            <p className="confirm-to">We sent a confirmation link to<br /><strong>{sentTo}</strong></p>
+            <p className="confirm-sub">Welcome aboard! Please click the link in your email to verify your account and start making an impact.</p>
+            
+            <div className="confirm-actions">
+              <button className="a-btn-primary" onClick={() => reset("login")}>
+                Back to Sign In
+              </button>
+              <button className="a-btn-ghost-small" onClick={() => setEmailSent(false)}>
+                Didn't get an email? Try again
+              </button>
+            </div>
           </div>
         </div>
       </div>

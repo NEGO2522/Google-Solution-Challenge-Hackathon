@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { supabase } from "../../lib/supabase";
+import TrustScore from "../../components/TrustScore";
 import "./VolunteerProfile.css";
 
 const SKILL_OPTIONS = [
@@ -303,6 +304,9 @@ export default function VolunteerProfile({ user }) {
         </div>
 
         <div className="vp-right-col">
+          {/* ── Trust Score ── */}
+          <TrustScore volunteer={profile} />
+
           {/* ── Section 4: Location ── */}
           <section className="vp-section">
             <h3>📍 Location</h3>

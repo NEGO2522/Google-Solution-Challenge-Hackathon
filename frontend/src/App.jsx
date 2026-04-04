@@ -3,41 +3,136 @@ import { supabase } from "./lib/supabase";
 import AuthPage from "./pages/auth/AuthPage";
 import Dashboard from "./pages/Dashboard";
 
+async function buildUser(supabaseUser) {
+  const meta = supabaseUser.user_metadata || {};
+  const base = {
+    id: supabaseUser.id,
+    email: supabaseUser.email,
+    name: meta.name || supabaseUser.email.split("@")[0],
+    role: meta.role || "volunteer",
+    ...meta,
+  };
+
+  try {
+    if (base.role === "ngo_admin") {
+      const { data } = await supabase
+        .from("ngo_profiles")
+        .select("ngo_name, ngo_city, ngo_reg_number")
+        .eq("id", supabaseUser.id)
+        .maybeSingle();
+      if (data) {
+        base.ngoName = data.ngo_name;
+        base.ngoCity = data.ngo_city;
+      }
+    } else {
+      const { data } = await supabase
+        .from("volunteer_profiles")
+        .select(
+          "trust_score, avg_rating, tasks_completed, tasks_accepted, " +
+          "total_ratings, verified, verification_status, city, skills, " +
+          "availability, lat, lng"
+        )
+        .eq("id", supabaseUser.id)
+        .maybeSingle();
+      if (data) Object.assign(base, data);
+    }
+  } catch (err) {
+    console.warn("buildUser: profile fetch failed:", err.message);
+  }
+
+  return base;
+}
+
+// Wraps any promise with a timeout — if it hangs, resolve with fallback
+function withTimeout(promise, ms, fallback) {
+  return Promise.race([
+    promise,
+    new Promise((resolve) => setTimeout(() => resolve(fallback), ms)),
+  ]);
+}
+
 export default function App() {
-  const [user, setUser] = useState(null);
+  const [user, setUser]       = useState(null);
   const [checked, setChecked] = useState(false);
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session?.user) {
-        const meta = session.user.user_metadata || {};
-        setUser({
-          id: session.user.id,
-          email: session.user.email,
-          name: meta.name || session.user.email.split("@")[0],
-          role: meta.role || "volunteer",
-          ...meta,
-        });
-      }
-      setChecked(true);
-    });
+    let cancelled = false;
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (session?.user) {
-        const meta = session.user.user_metadata || {};
-        setUser({
-          id: session.user.id,
-          email: session.user.email,
-          name: meta.name || session.user.email.split("@")[0],
-          role: meta.role || "volunteer",
-          ...meta,
-        });
-      } else {
-        setUser(null);
-      }
-    });
+    async function init() {
+      try {
+        // Give Supabase max 4 seconds to respond — if it hangs, bail out
+        const result = await withTimeout(
+          supabase.auth.getSession(),
+          4000,
+          { data: { session: null }, error: new Error("timeout") }
+        );
 
-    return () => subscription.unsubscribe();
+        if (cancelled) return;
+
+        const { data: { session }, error } = result;
+        if (error && error.message !== "timeout") {
+          console.warn("getSession error:", error.message);
+        }
+
+        if (session?.user) {
+          const enriched = await withTimeout(buildUser(session.user), 4000, null);
+          if (!cancelled && enriched) setUser(enriched);
+          else if (!cancelled && session?.user) {
+            // buildUser timed out — use basic user without DB enrichment
+            const meta = session.user.user_metadata || {};
+            setUser({
+              id: session.user.id,
+              email: session.user.email,
+              name: meta.name || session.user.email.split("@")[0],
+              role: meta.role || "volunteer",
+              ...meta,
+            });
+          }
+        }
+      } catch (err) {
+        console.warn("init error:", err.message);
+      } finally {
+        if (!cancelled) setChecked(true);
+      }
+    }
+
+    init();
+
+    // Listen for sign-in / sign-out AFTER initial check
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (_event, session) => {
+        if (cancelled) return;
+        if (session?.user) {
+          try {
+            const enriched = await withTimeout(buildUser(session.user), 4000, null);
+            if (!cancelled) {
+              if (enriched) {
+                setUser(enriched);
+              } else {
+                const meta = session.user.user_metadata || {};
+                setUser({
+                  id: session.user.id,
+                  email: session.user.email,
+                  name: meta.name || session.user.email.split("@")[0],
+                  role: meta.role || "volunteer",
+                  ...meta,
+                });
+              }
+            }
+          } catch (err) {
+            console.warn("onAuthStateChange buildUser failed:", err.message);
+          }
+        } else {
+          if (!cancelled) setUser(null);
+        }
+        if (!cancelled) setChecked(true);
+      }
+    );
+
+    return () => {
+      cancelled = true;
+      subscription.unsubscribe();
+    };
   }, []);
 
   const handleAuthSuccess = (userData) => setUser(userData);
@@ -47,14 +142,17 @@ export default function App() {
     setUser(null);
   };
 
+  // ── Loading spinner — max 4s then gives up ───────────────────
   if (!checked) {
     return (
       <div style={{
         minHeight: "100vh",
         background: "#000",
         display: "flex",
+        flexDirection: "column",
         alignItems: "center",
         justifyContent: "center",
+        gap: 16,
       }}>
         <div style={{
           width: 32, height: 32,
@@ -63,6 +161,7 @@ export default function App() {
           borderRadius: "50%",
           animation: "spin 0.7s linear infinite",
         }} />
+        <span style={{ color: "#333", fontSize: 12 }}>Connecting…</span>
         <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
       </div>
     );

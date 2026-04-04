@@ -1,0 +1,41 @@
+.ts-card {
+  background: #0d0d0d;
+  border: 1px solid #1a1a1a;
+  border-radius: 14px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.ts-header { font-size: 13px; font-weight: 700; color: #555; text-transform: uppercase; letter-spacing: 0.06em; }
+
+.ts-main { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
+
+.ts-ring-wrap { position: relative; flex-shrink: 0; }
+.ts-ring-center {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+}
+.ts-score-val { font-size: 22px; font-weight: 900; line-height: 1; }
+.ts-score-max { font-size: 10px; color: #444; }
+
+.ts-info  { flex: 1; min-width: 160px; }
+.ts-label { font-size: 15px; font-weight: 700; margin-bottom: 10px; }
+.ts-breakdown { display: flex; flex-direction: column; gap: 6px; }
+.ts-row {
+  display: flex; justify-content: space-between;
+  font-size: 12px; color: #666;
+}
+.ts-row strong { color: #ccc; }
+
+.ts-formula {
+  background: #0a0a0a;
+  border: 1px solid #1a1a1a;
+  border-radius: 8px;
+  padding: 12px;
+}
+.ts-formula-title { font-size: 11px; color: #444; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px; }
+.ts-formula-items { display: flex; flex-direction: column; gap: 5px; }
+.ts-fi { font-size: 12px; color: #666; display: flex; align-items: center; gap: 8px; }
+.ts-fi-pct { background: #1a1a1a; border-radius: 4px; padding: 2px 6px; font-size: 11px; font-weight: 700; color: #aaa; }
