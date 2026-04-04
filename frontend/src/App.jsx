@@ -75,6 +75,7 @@ export default function App() {
         }
 
         if (session?.user) {
+
           const enriched = await withTimeout(buildUser(session.user), 4000, null);
           if (!cancelled && enriched) setUser(enriched);
           else if (!cancelled && session?.user) {
@@ -103,6 +104,7 @@ export default function App() {
       async (_event, session) => {
         if (cancelled) return;
         if (session?.user) {
+
           try {
             const enriched = await withTimeout(buildUser(session.user), 4000, null);
             if (!cancelled) {
@@ -135,7 +137,9 @@ export default function App() {
     };
   }, []);
 
-  const handleAuthSuccess = (userData) => setUser(userData);
+  const handleAuthSuccess = (userData) => {
+    setUser(userData);
+  };
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
@@ -161,13 +165,20 @@ export default function App() {
           borderRadius: "50%",
           animation: "spin 0.7s linear infinite",
         }} />
-        <span style={{ color: "#333", fontSize: 12 }}>Connecting…</span>
+        <span style={{ color: "#333", fontSize: 12 }}>VolunteerBridge is loading…</span>
         <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
       </div>
     );
   }
 
-  return user
-    ? <Dashboard user={user} onLogout={handleLogout} />
-    : <AuthPage onAuthSuccess={handleAuthSuccess} />;
+  if (user) {
+    return (
+      <Dashboard 
+        user={user} 
+        onLogout={handleLogout} 
+      />
+    );
+  }
+
+  return <AuthPage onAuthSuccess={handleAuthSuccess} />;
 }

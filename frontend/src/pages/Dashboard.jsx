@@ -56,7 +56,7 @@ export default function Dashboard({ user, onLogout }) {
               <span className="dash-logo-icon">⛑</span>
             </div>
             <div className="dash-wordmark">
-              <span className="dash-wordmark-name">ReliefLink</span>
+              <span className="dash-wordmark-name">VolunteerBridge</span>
               <span className="dash-wordmark-dot" />
               <span className="dash-wordmark-role">
                 {isAdmin ? "NGO Admin" : "Volunteer"}

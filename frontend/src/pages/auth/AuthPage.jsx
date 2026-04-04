@@ -155,7 +155,7 @@ export default function AuthPage({ onAuthSuccess }) {
           <div className="a-logo-mark">
             <span>⛑</span>
           </div>
-          <span className="a-logo-name">ReliefLink</span>
+          <span className="a-logo-name">VolunteerBridge</span>
         </div>
 
         <div className="a-hero-wrapper">
@@ -176,7 +176,7 @@ export default function AuthPage({ onAuthSuccess }) {
 
           {/* Heading */}
           <div className="a-form-heading">
-            <h2>{isLogin ? "Welcome back" : step === 1 ? "Join ReliefLink" : isAdmin ? "NGO Details" : "Your Profile"}</h2>
+            <h2>{isLogin ? "Welcome back" : step === 1 ? "Join VolunteerBridge" : isAdmin ? "NGO Details" : "Your Profile"}</h2>
             <p>
               {isLogin
                 ? "Sign in to your account to continue."
@@ -284,9 +284,6 @@ export default function AuthPage({ onAuthSuccess }) {
                   </div>
                 )}
 
-                {isLogin && (
-                  <div className="a-forgot"><a href="#">Forgot password?</a></div>
-                )}
               </>
             )}
 
