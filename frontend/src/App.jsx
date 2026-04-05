@@ -3,6 +3,7 @@ import { supabase } from "./lib/supabase";
 import AuthPage from "./pages/auth/AuthPage";
 import Dashboard from "./pages/Dashboard";
 
+
 async function buildUser(supabaseUser) {
   const meta = supabaseUser.user_metadata || {};
   const base = {
@@ -53,6 +54,7 @@ function withTimeout(promise, ms, fallback) {
 export default function App() {
   const [user, setUser]           = useState(null);
   const [checked, setChecked]     = useState(false);
+
 
   // ── Re-fetch profile from DB — uses ref to avoid stale closure ──
   const userIdRef = useRef(null);
