@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import VolunteerProfile from "./volunteer/VolunteerProfile";
 import IssueReport from "./issues/IssueReport";
 import MapView from "./map/MapView";
@@ -110,6 +110,7 @@ export default function Dashboard({ user, onLogout, onRefreshUser }) {
           </main>
         </div>
       </div>
+      <ChatbotWidget user={user} />
     </NotificationProvider>
   );
 }
@@ -314,5 +315,175 @@ function ProfileStrength({ user, isAdmin, onNavigate }) {
         ))}
       </div>
     </div>
+  );
+}
+
+/* ══════════════════════════════════════
+   CHATBOT WIDGET
+══════════════════════════════════════ */
+function ChatbotWidget({ user }) {
+  const [open, setOpen]       = useState(false);
+  const [messages, setMessages] = useState([
+    { role: "assistant", text: `Hi ${user?.name?.split(" ")[0] || "there"} 👋 I'm your VolunteerBridge assistant. Ask me anything about tasks, issues, or how to use the platform!` }
+  ]);
+  const [input, setInput]     = useState("");
+  const [loading, setLoading] = useState(false);
+  const bottomRef             = useRef(null);
+
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages, open]);
+
+  const sendMessage = async () => {
+    const text = input.trim();
+    if (!text || loading) return;
+    setInput("");
+    const userMsg = { role: "user", text };
+    setMessages((prev) => [...prev, userMsg]);
+    setLoading(true);
+
+    const systemPrompt = `You are a helpful assistant for VolunteerBridge, an AI-powered disaster relief volunteer platform.
+The current user is: ${user?.name}, role: ${user?.role === "ngo_admin" ? "NGO Admin" : "Volunteer"}.
+Help them with questions about: reporting issues, finding tasks, trust scores, volunteer matching, map features, and platform navigation.
+Be concise, friendly, and helpful. Keep answers under 80 words.`;
+
+    try {
+      const res = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${import.meta.env.VITE_GEMINI_API_KEY}`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            system_instruction: { parts: [{ text: systemPrompt }] },
+            contents: [{ role: "user", parts: [{ text }] }],
+          }),
+        }
+      );
+      const data = await res.json();
+      const reply = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+      setMessages((prev) => [...prev, { role: "assistant", text: reply || "Sorry, I couldn't get a response. Try again!" }]);
+    } catch {
+      setMessages((prev) => [...prev, { role: "assistant", text: "Connection error. Please try again." }]);
+    }
+    setLoading(false);
+  };
+
+  const handleKey = (e) => {
+    if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+  };
+
+  return (
+    <>
+      {/* Floating button */}
+      <button
+        onClick={() => setOpen((o) => !o)}
+        style={{
+          position: "fixed", bottom: 28, right: 28, zIndex: 9999,
+          width: 56, height: 56, borderRadius: "50%",
+          background: "#ffffff",
+          border: "none", cursor: "pointer", boxShadow: "0 4px 16px rgba(0,0,0,0.15)",
+          display: "flex", alignItems: "center", justifyContent: "center",
+          fontSize: 26, transition: "transform 0.2s",
+          transform: open ? "scale(0.9)" : "scale(1)",
+        }}
+        title="VolunteerBridge Assistant"
+      >
+        {open ? (
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="black" xmlns="http://www.w3.org/2000/svg"><path d="M5 3h14a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2z"/></svg>
+        ) : (
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="black" xmlns="http://www.w3.org/2000/svg"><path d="M5 3h14a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2z"/></svg>
+        )}
+      </button>
+
+      {/* Chat window */}
+      {open && (
+        <div style={{
+          position: "fixed", bottom: 96, right: 28, zIndex: 9998,
+          width: 340, height: 480,
+          background: "#0c0c0f", border: "1px solid rgba(255,255,255,0.1)",
+          borderRadius: 16, display: "flex", flexDirection: "column",
+          boxShadow: "0 8px 48px rgba(0,0,0,0.6)", overflow: "hidden",
+        }}>
+
+          {/* Header */}
+          <div style={{
+            padding: "14px 16px", background: "linear-gradient(135deg, #1e3a8a22, #312e8122)",
+            borderBottom: "1px solid rgba(255,255,255,0.07)",
+            display: "flex", alignItems: "center", gap: 10,
+          }}>
+            <span style={{ fontSize: 22 }}>💬</span>
+            <div>
+              <div style={{ color: "#fff", fontWeight: 700, fontSize: 13 }}>VB Assistant</div>
+              <div style={{ color: "#22c55e", fontSize: 10, fontWeight: 600 }}>● Online</div>
+            </div>
+          </div>
+
+          {/* Messages */}
+          <div style={{
+            flex: 1, overflowY: "auto", padding: "12px 14px",
+            display: "flex", flexDirection: "column", gap: 10,
+          }}>
+            {messages.map((m, i) => (
+              <div key={i} style={{
+                display: "flex",
+                justifyContent: m.role === "user" ? "flex-end" : "flex-start",
+              }}>
+                <div style={{
+                  maxWidth: "80%", padding: "8px 12px", borderRadius: 12,
+                  fontSize: 12, lineHeight: 1.5,
+                  background: m.role === "user"
+                    ? "linear-gradient(135deg, #3b82f6, #6366f1)"
+                    : "rgba(255,255,255,0.06)",
+                  color: "#fff",
+                  borderBottomRightRadius: m.role === "user" ? 4 : 12,
+                  borderBottomLeftRadius:  m.role === "assistant" ? 4 : 12,
+                }}>
+                  {m.text}
+                </div>
+              </div>
+            ))}
+            {loading && (
+              <div style={{ display: "flex", justifyContent: "flex-start" }}>
+                <div style={{
+                  padding: "8px 14px", borderRadius: 12, background: "rgba(255,255,255,0.06)",
+                  color: "#64748b", fontSize: 12,
+                }}>typing…</div>
+              </div>
+            )}
+            <div ref={bottomRef} />
+          </div>
+
+          {/* Input */}
+          <div style={{
+            padding: "10px 12px", borderTop: "1px solid rgba(255,255,255,0.07)",
+            display: "flex", gap: 8,
+          }}>
+            <input
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyDown={handleKey}
+              placeholder="Ask me anything…"
+              style={{
+                flex: 1, background: "rgba(255,255,255,0.05)",
+                border: "1px solid rgba(255,255,255,0.1)", borderRadius: 8,
+                padding: "7px 10px", color: "#fff", fontSize: 12,
+                outline: "none", fontFamily: "inherit",
+              }}
+            />
+            <button
+              onClick={sendMessage}
+              disabled={loading || !input.trim()}
+              style={{
+                background: "linear-gradient(135deg, #3b82f6, #6366f1)",
+                border: "none", borderRadius: 8, padding: "7px 14px",
+                color: "#fff", fontSize: 12, fontWeight: 700,
+                cursor: loading || !input.trim() ? "not-allowed" : "pointer",
+                opacity: loading || !input.trim() ? 0.5 : 1,
+              }}
+            >Send</button>
+          </div>
+        </div>
+      )}
+    </>
   );
 }

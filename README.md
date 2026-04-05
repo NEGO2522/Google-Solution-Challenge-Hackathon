@@ -1,21 +1,24 @@
-# ReliefLink — AI-Powered Volunteer Allocation System
+# VolunteerBridge — AI-Powered Volunteer Allocation System
 
 > Submitted to **Google Solution Challenge**
 
-ReliefLink is an AI-powered platform that intelligently matches verified volunteers to disaster relief and community crisis situations in real time. It uses a smart scoring algorithm that weighs volunteer skills, geographic proximity, trust score, and issue urgency to dispatch the right help — faster.
+VolunteerBridge is an AI-powered platform that intelligently matches verified volunteers to disaster relief and community crisis situations in real time. It uses a smart scoring algorithm that weighs volunteer skills, geographic proximity, trust score, and issue urgency to dispatch the right help — faster.
 
 ---
 
 ## The Problem
 
-During natural disasters and community crises, NGOs and relief coordinators struggle to quickly identify and deploy the right volunteers. Manual coordination is slow, error-prone, and leaves critical gaps in response time — costing lives.
+When disasters strike, every minute matters. Yet most NGOs still coordinate volunteers through phone calls, spreadsheets, and WhatsApp groups — a slow, chaotic process that leads to the wrong people being sent to the wrong places, or no one being sent at all. Manual coordination is slow, error-prone, and leaves critical gaps in response time — costing lives.
 
 ## Our Solution
 
-ReliefLink provides a unified platform where:
-- NGO admins can report crisis issues and see AI-matched volunteers instantly.
-- Volunteers receive real-time task assignments based on their verified skills and location.
-- A trust score system ensures accountability and quality over time.
+VolunteerBridge solves this by bringing AI-driven intelligence to volunteer dispatch. The moment an NGO admin reports a crisis issue on the platform, our matching engine instantly scores every available volunteer across four dimensions: their verified skills, how close they are to the incident, their historical trust score earned through past task completions, and the urgency level of the issue. The highest-scoring volunteers are surfaced to the admin in seconds — no guesswork, no manual filtering.
+
+Volunteers interact through a clean mobile-friendly dashboard where they receive task assignments in real time, can accept or start tasks with a single tap, and submit proof of completion. Every completed task updates their trust score, creating a self-improving reputation system that makes future matches even more accurate.
+
+On the admin side, NGO coordinators get a live map of all active crisis pins, a full volunteer management console, and the ability to rate volunteers after each task — closing the feedback loop and ensuring accountability on both ends.
+
+The result is a platform that compresses what used to take hours of phone coordination into a few seconds of AI-assisted decision-making, putting the right help in the right place faster than any manual process can.
 
 ---
 
@@ -92,8 +95,8 @@ ReliefLink-AI-Smart-Volunteer-Allocation-System/
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/your-username/ReliefLink-AI-Smart-Volunteer-Allocation-System.git
-cd ReliefLink-AI-Smart-Volunteer-Allocation-System
+git clone https://github.com/your-username/VolunteerBridge.git
+cd VolunteerBridge
 ```
 
 ### 2. Set up the database

@@ -1,8 +1,7 @@
 import { useState, useEffect } from "react";
-import { MapContainer, TileLayer, Marker, useMapEvents } from "react-leaflet";
+import { MapContainer, TileLayer, Marker, useMapEvents, useMap } from "react-leaflet";
 import L from "leaflet";
 import { supabase } from "../../lib/supabase";
-import "leaflet/dist/leaflet.css";
 import "./IssueReport.css";
 
 delete L.Icon.Default.prototype._getIconUrl;
@@ -27,8 +26,52 @@ const URGENCY = [
   { value: "critical", label: "🚨 Critical", cls: "u-critical" },
 ];
 
+const URGENCY_LABELS = { low: "low", medium: "moderate", high: "high", critical: "critical" };
+const CATEGORY_NEEDS = {
+  medical:   "immediate medical attention and first aid supplies",
+  food:      "food, clean water, and nutrition supplies",
+  shelter:   "temporary shelter, blankets, and basic amenities",
+  rescue:    "emergency rescue and evacuation assistance",
+  education: "educational support and learning materials",
+  other:     "urgent community assistance",
+};
+
+function buildFallbackDescription(form) {
+  const urgency  = URGENCY_LABELS[form.urgency]  || "urgent";
+  const needs    = CATEGORY_NEEDS[form.category] || "immediate assistance";
+  const location = form.address ? ` at ${form.address}` : "";
+  const title    = form.title   ? form.title      : "A community issue";
+  const existing = form.description?.trim();
+
+  return `${title}${location} requires ${urgency} attention. Affected individuals need ${needs}.${
+    existing ? " Additional context: " + existing : ""
+  } Volunteers with relevant skills are urgently requested to respond and coordinate with local NGO admin for deployment.`;
+}
+
 function LocationPicker({ onPick }) {
   useMapEvents({ click(e) { onPick(e.latlng.lat, e.latlng.lng); } });
+  return null;
+}
+
+// Smoothly pan the map when center changes — avoids destroying/recreating the MapContainer
+function MapPanner({ center }) {
+  const map = useMap();
+  useEffect(() => {
+    if (center) map.setView(center, map.getZoom());
+  }, [center, map]);
+  return null;
+}
+
+// Forces Leaflet to recalculate container size after mount (fixes blank map bug)
+function MapInvalidator() {
+  const map = useMap();
+  useEffect(() => {
+    // Fire multiple times to catch any layout settling delays
+    const t1 = setTimeout(() => map.invalidateSize(), 100);
+    const t2 = setTimeout(() => map.invalidateSize(), 300);
+    const t3 = setTimeout(() => map.invalidateSize(), 600);
+    return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); };
+  }, [map]);
   return null;
 }
 
@@ -44,8 +87,17 @@ export default function IssueReport({ user, onIssueSubmitted }) {
   const [mapCenter, setMapCenter]   = useState([20.5937, 78.9629]);
 
   useEffect(() => {
-    navigator.geolocation.getCurrentPosition((pos) => {
-      setMapCenter([pos.coords.latitude, pos.coords.longitude]);
+    if (!navigator.geolocation || !navigator.permissions) return;
+    // Check permission state BEFORE calling getCurrentPosition
+    // This avoids triggering the blocked prompt warning in Chrome
+    navigator.permissions.query({ name: "geolocation" }).then((result) => {
+      if (result.state === "granted") {
+        navigator.geolocation.getCurrentPosition(
+          (pos) => setMapCenter([pos.coords.latitude, pos.coords.longitude]),
+          () => {}
+        );
+      }
+      // if "prompt" or "denied", do nothing on load — user can click the button
     });
   }, []);
 
@@ -68,12 +120,21 @@ export default function IssueReport({ user, onIssueSubmitted }) {
   };
 
   const [enhancing, setEnhancing] = useState(false);
+  const [aiCooldown, setAiCooldown] = useState(0);
+
+  // Cooldown timer — counts down seconds after a 429
+  useEffect(() => {
+    if (aiCooldown <= 0) return;
+    const t = setTimeout(() => setAiCooldown((s) => s - 1), 1000);
+    return () => clearTimeout(t);
+  }, [aiCooldown]);
 
   const enhanceWithAI = async () => {
     if (!form.title.trim() && !form.description.trim()) {
       alert("Enter a title or description first.");
       return;
     }
+    if (aiCooldown > 0) return;
     setEnhancing(true);
     try {
       const prompt = `You are a disaster relief coordinator. A volunteer has reported this community issue:
@@ -87,7 +148,7 @@ Location: ${form.address || "(unknown)"}
 Rewrite the description to be clear, concise and actionable for NGO volunteers. Include: number of people affected (estimate if unknown), immediate needs, and any safety concerns. Keep it under 100 words. Return only the improved description text, nothing else.`;
 
       const res = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${import.meta.env.VITE_GEMINI_API_KEY}`,
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${import.meta.env.VITE_GEMINI_API_KEY}`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -96,6 +157,21 @@ Rewrite the description to be clear, concise and actionable for NGO volunteers. 
           }),
         }
       );
+
+      if (res.status === 429) {
+        setAiCooldown(60);
+        // Fallback: apply a local template-based enhancement instead
+        const fallback = buildFallbackDescription(form);
+        if (fallback) {
+          update("description", fallback);
+          alert("⚠️ Gemini rate limit reached — applied a smart local template instead. Try AI again in 60s.");
+        } else {
+          alert("Gemini rate limit reached. Please wait 60 seconds and try again.");
+        }
+        setEnhancing(false);
+        return;
+      }
+
       const data = await res.json();
       const improved = data?.candidates?.[0]?.content?.parts?.[0]?.text;
       if (improved) update("description", improved.trim());
@@ -173,8 +249,12 @@ Rewrite the description to be clear, concise and actionable for NGO volunteers. 
                 <label>Description <span style={{color:'#3b82f6',fontWeight:600,fontSize:10}}>✨ AI-powered</span></label>
                 <textarea value={form.description} onChange={(e) => update("description", e.target.value)}
                   placeholder="Number of people affected, immediate needs…" rows={4} />
-                <button type="button" className="ir-ai-btn" onClick={enhanceWithAI} disabled={enhancing}>
-                  {enhancing ? <><span className="ir-ai-spinner"/>Gemini is enhancing…</> : "✨ Enhance with Gemini AI"}
+                <button type="button" className="ir-ai-btn" onClick={enhanceWithAI} disabled={enhancing || aiCooldown > 0}>
+                  {enhancing
+                    ? <><span className="ir-ai-spinner"/>Gemini is enhancing…</>
+                    : aiCooldown > 0
+                    ? `⏳ Rate limited — retry in ${aiCooldown}s`
+                    : "✨ Enhance with Gemini AI"}
                 </button>
               </div>
               <div className="ir-field">
@@ -232,11 +312,13 @@ Rewrite the description to be clear, concise and actionable for NGO volunteers. 
               </div>
 
               <div className="ir-map-wrapper">
-                <MapContainer center={mapCenter} zoom={12} className="ir-map" key={mapCenter.join(",")}>
+                <MapContainer center={mapCenter} zoom={12} className="ir-map" style={{ height: "100%", width: "100%" }}>
                   <TileLayer
-                    url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
-                    attribution='&copy; OpenStreetMap &copy; CARTO'
+                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                   />
+                  <MapInvalidator />
+                  <MapPanner center={mapCenter} />
                   <LocationPicker onPick={(lat, lng) => { update("lat", lat); update("lng", lng); }} />
                   {form.lat && form.lng && <Marker position={[form.lat, form.lng]} />}
                 </MapContainer>
