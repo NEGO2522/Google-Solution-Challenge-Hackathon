@@ -111,6 +111,24 @@
   pointer-events: none; z-index: 999; white-space: nowrap;
 }
 
+/* AI enhance button */
+.ir-ai-btn {
+  display: flex; align-items: center; gap: 6px;
+  background: linear-gradient(135deg, rgba(59,130,246,0.15), rgba(99,102,241,0.15));
+  border: 1px solid rgba(59,130,246,0.35);
+  border-radius: 6px; padding: 7px 14px;
+  color: #60a5fa; font-size: 11px; font-weight: 700;
+  cursor: pointer; font-family: inherit; transition: all 0.2s;
+  width: fit-content;
+}
+.ir-ai-btn:hover:not(:disabled) { background: linear-gradient(135deg, rgba(59,130,246,0.25), rgba(99,102,241,0.25)); border-color: #3b82f6; }
+.ir-ai-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+.ir-ai-spinner {
+  width: 11px; height: 11px;
+  border: 2px solid rgba(96,165,250,0.3); border-top-color: #60a5fa;
+  border-radius: 50%; animation: ir-spin 0.7s linear infinite; display: inline-block;
+}
+
 /* Submit button */
 .ir-btn-primary {
   width: 100%; background: #fff; border: none; border-radius: 7px; padding: 10px;

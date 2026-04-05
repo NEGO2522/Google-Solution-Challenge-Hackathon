@@ -67,6 +67,45 @@ export default function IssueReport({ user, onIssueSubmitted }) {
     );
   };
 
+  const [enhancing, setEnhancing] = useState(false);
+
+  const enhanceWithAI = async () => {
+    if (!form.title.trim() && !form.description.trim()) {
+      alert("Enter a title or description first.");
+      return;
+    }
+    setEnhancing(true);
+    try {
+      const prompt = `You are a disaster relief coordinator. A volunteer has reported this community issue:
+
+Title: ${form.title || "(no title)"}
+Category: ${form.category || "(unknown)"}
+Urgency: ${form.urgency || "(unknown)"}
+Description: ${form.description || "(no description)"}
+Location: ${form.address || "(unknown)"}
+
+Rewrite the description to be clear, concise and actionable for NGO volunteers. Include: number of people affected (estimate if unknown), immediate needs, and any safety concerns. Keep it under 100 words. Return only the improved description text, nothing else.`;
+
+      const res = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${import.meta.env.VITE_GEMINI_API_KEY}`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            contents: [{ parts: [{ text: prompt }] }],
+          }),
+        }
+      );
+      const data = await res.json();
+      const improved = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+      if (improved) update("description", improved.trim());
+      else alert("Gemini didn't return a response. Try again.");
+    } catch (err) {
+      alert("AI enhancement failed: " + err.message);
+    }
+    setEnhancing(false);
+  };
+
   const validate = () => {
     const e = {};
     if (!form.title.trim()) e.title    = "Title is required";
@@ -131,9 +170,12 @@ export default function IssueReport({ user, onIssueSubmitted }) {
                 {errors.title && <span className="ir-err">{errors.title}</span>}
               </div>
               <div className="ir-field">
-                <label>Description</label>
+                <label>Description <span style={{color:'#3b82f6',fontWeight:600,fontSize:10}}>✨ AI-powered</span></label>
                 <textarea value={form.description} onChange={(e) => update("description", e.target.value)}
                   placeholder="Number of people affected, immediate needs…" rows={4} />
+                <button type="button" className="ir-ai-btn" onClick={enhanceWithAI} disabled={enhancing}>
+                  {enhancing ? <><span className="ir-ai-spinner"/>Gemini is enhancing…</> : "✨ Enhance with Gemini AI"}
+                </button>
               </div>
               <div className="ir-field">
                 <label>Address / Landmark</label>
