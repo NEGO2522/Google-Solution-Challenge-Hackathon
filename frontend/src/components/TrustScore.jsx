@@ -20,7 +20,7 @@ export default function TrustScore({ volunteer }) {
 
       <div className="ts-main">
         <div className="ts-ring-wrap">
-          <svg viewBox="0 0 100 100" width="110" height="110">
+          <svg viewBox="0 0 100 100" width="80" height="80">
             <circle cx="50" cy="50" r="42" fill="none" stroke="#1a1a1a" strokeWidth="8" />
             <circle
               cx="50" cy="50" r="42" fill="none"

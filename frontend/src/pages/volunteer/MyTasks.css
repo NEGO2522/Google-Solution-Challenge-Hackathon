@@ -1,5 +1,5 @@
 .mt-root { display: flex; flex-direction: column; gap: 20px; }
-.mt-header h2 { margin: 0 0 4px; font-size: 20px; color: #fff; }
+.mt-header h2 { margin: 0 0 3px; font-size: 16px; color: #fff; }
 .mt-header p  { margin: 0; font-size: 13px; color: #555; }
 
 .mt-stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
@@ -9,12 +9,12 @@
   background: #0d0d0d;
   border: 1px solid #1a1a1a;
   border-radius: 10px;
-  padding: 14px;
+  padding: 12px 14px;
   display: flex; flex-direction: column; gap: 2px;
 }
 .mt-stat.accent { border-color: #f59e0b44; background: #1a1000; }
 .mt-stat-icon  { font-size: 18px; }
-.mt-stat-val   { font-size: 24px; font-weight: 800; color: #fff; }
+.mt-stat-val   { font-size: 18px; font-weight: 800; color: #fff; }
 .mt-stat-label { font-size: 11px; color: #555; font-weight: 600; }
 
 .mt-loader { padding: 32px; text-align: center; color: #555; font-size: 13px; }

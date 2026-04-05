@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { supabase } from "./lib/supabase";
 import AuthPage from "./pages/auth/AuthPage";
 import Dashboard from "./pages/Dashboard";
@@ -30,7 +30,7 @@ async function buildUser(supabaseUser) {
         .select(
           "trust_score, avg_rating, tasks_completed, tasks_accepted, " +
           "total_ratings, verified, verification_status, city, skills, " +
-          "availability, lat, lng"
+          "availability, lat, lng, phone, phone_verified, doc_url"
         )
         .eq("id", supabaseUser.id)
         .maybeSingle();
@@ -43,7 +43,6 @@ async function buildUser(supabaseUser) {
   return base;
 }
 
-// Wraps any promise with a timeout — if it hangs, resolve with fallback
 function withTimeout(promise, ms, fallback) {
   return Promise.race([
     promise,
@@ -52,34 +51,57 @@ function withTimeout(promise, ms, fallback) {
 }
 
 export default function App() {
-  const [user, setUser]       = useState(null);
-  const [checked, setChecked] = useState(false);
+  const [user, setUser]           = useState(null);
+  const [checked, setChecked]     = useState(false);
+
+  // ── Re-fetch profile from DB — uses ref to avoid stale closure ──
+  const userIdRef = useRef(null);
+  useEffect(() => { userIdRef.current = user?.id; }, [user?.id]);
+
+  const refreshUserRef = useRef(null);
+  const refreshUser = async () => {
+    const uid = userIdRef.current;
+    if (!uid) return;
+    try {
+      const { data } = await supabase
+        .from("volunteer_profiles")
+        .select(
+          "trust_score, avg_rating, tasks_completed, tasks_accepted, " +
+          "total_ratings, verified, verification_status, city, skills, " +
+          "availability, lat, lng, phone, phone_verified, doc_url"
+        )
+        .eq("id", uid)
+        .maybeSingle();
+      if (data) {
+        setUser((prev) => ({ ...prev, ...data }));
+      }
+    } catch (err) {
+      console.warn("refreshUser failed:", err.message);
+    }
+  };
+  refreshUserRef.current = refreshUser;
+
+  const stableRefreshUser = useRef((...args) => refreshUserRef.current?.(...args)).current;
 
   useEffect(() => {
     let cancelled = false;
 
     async function init() {
       try {
-        // Give Supabase max 4 seconds to respond — if it hangs, bail out
         const result = await withTimeout(
           supabase.auth.getSession(),
           4000,
           { data: { session: null }, error: new Error("timeout") }
         );
-
         if (cancelled) return;
-
         const { data: { session }, error } = result;
         if (error && error.message !== "timeout") {
           console.warn("getSession error:", error.message);
         }
-
         if (session?.user) {
-
           const enriched = await withTimeout(buildUser(session.user), 4000, null);
           if (!cancelled && enriched) setUser(enriched);
           else if (!cancelled && session?.user) {
-            // buildUser timed out — use basic user without DB enrichment
             const meta = session.user.user_metadata || {};
             setUser({
               id: session.user.id,
@@ -99,18 +121,15 @@ export default function App() {
 
     init();
 
-    // Listen for sign-in / sign-out AFTER initial check
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (_event, session) => {
         if (cancelled) return;
         if (session?.user) {
-
           try {
             const enriched = await withTimeout(buildUser(session.user), 4000, null);
             if (!cancelled) {
-              if (enriched) {
-                setUser(enriched);
-              } else {
+              if (enriched) setUser(enriched);
+              else {
                 const meta = session.user.user_metadata || {};
                 setUser({
                   id: session.user.id,
@@ -146,24 +165,17 @@ export default function App() {
     setUser(null);
   };
 
-  // ── Loading spinner — max 4s then gives up ───────────────────
   if (!checked) {
     return (
       <div style={{
-        minHeight: "100vh",
-        background: "#000",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        gap: 16,
+        minHeight: "100vh", background: "#000",
+        display: "flex", flexDirection: "column",
+        alignItems: "center", justifyContent: "center", gap: 16,
       }}>
         <div style={{
           width: 32, height: 32,
-          border: "2px solid #1a1a1a",
-          borderTopColor: "#fff",
-          borderRadius: "50%",
-          animation: "spin 0.7s linear infinite",
+          border: "2px solid #1a1a1a", borderTopColor: "#fff",
+          borderRadius: "50%", animation: "spin 0.7s linear infinite",
         }} />
         <span style={{ color: "#333", fontSize: 12 }}>VolunteerBridge is loading…</span>
         <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
@@ -171,14 +183,6 @@ export default function App() {
     );
   }
 
-  if (user) {
-    return (
-      <Dashboard 
-        user={user} 
-        onLogout={handleLogout} 
-      />
-    );
-  }
-
+  if (user) return <Dashboard user={user} onLogout={handleLogout} onRefreshUser={stableRefreshUser} />;
   return <AuthPage onAuthSuccess={handleAuthSuccess} />;
 }

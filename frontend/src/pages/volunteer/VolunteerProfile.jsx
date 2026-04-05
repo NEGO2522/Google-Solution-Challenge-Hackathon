@@ -13,7 +13,7 @@ const AVAILABILITY_OPTIONS = [
   "Weekdays (9am–5pm)","Weekends Only","Evenings","Full-Time","On-Call",
 ];
 
-export default function VolunteerProfile({ user }) {
+export default function VolunteerProfile({ user, onRefreshUser }) {
   // ── profile state ──
   const [profile, setProfile] = useState({
     name: user.name || "",
@@ -21,18 +21,21 @@ export default function VolunteerProfile({ user }) {
     city: user.city || "",
     skills: user.skills || [],
     availability: user.availability || "",
-    lat: null, lng: null,
-    doc_url: null,
-    phone_verified: false,
-    verification_status: "pending",
-    verified: false,
+    lat: user.lat || null,
+    lng: user.lng || null,
+    doc_url: user.doc_url || null,
+    phone_verified: user.phone_verified || false,
+    verification_status: user.verification_status || "pending",
+    verified: user.verified || false,
   });
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [loadingProfile, setLoadingProfile] = useState(true);
 
   // ── OTP state ──
-  const [otpStep, setOtpStep] = useState("idle"); // idle | sending | sent | verifying | done
+  const [otpStep, setOtpStep] = useState(
+    user.phone_verified ? "done" : "idle"
+  );
   const [otpCode, setOtpCode] = useState("");
   const [otpInput, setOtpInput] = useState("");
   const [otpError, setOtpError] = useState("");
@@ -109,6 +112,10 @@ export default function VolunteerProfile({ user }) {
       location: profile.lat && profile.lng
         ? `POINT(${profile.lng} ${profile.lat})`
         : null,
+      // Preserve these — never overwrite with false
+      phone_verified: profile.phone_verified ?? false,
+      verification_status: profile.verification_status ?? "pending",
+      doc_url: profile.doc_url ?? null,
       updated_at: new Date().toISOString(),
     };
 
@@ -120,6 +127,7 @@ export default function VolunteerProfile({ user }) {
     if (!error) {
       setSaved(true);
       setTimeout(() => setSaved(false), 3000);
+      onRefreshUser?.();
     } else {
       alert("Save failed: " + error.message);
     }
@@ -192,6 +200,7 @@ export default function VolunteerProfile({ user }) {
 
     setProfile((p) => ({ ...p, phone_verified: true }));
     setOtpStep("done");
+    onRefreshUser?.();
   }
 
   // ── Document upload ──
@@ -301,6 +310,28 @@ export default function VolunteerProfile({ user }) {
               ))}
             </div>
           </section>
+
+          {/* ── Section 4 (left): Document Upload ── */}
+          <section className="vp-section">
+            <h3>📄 Documents</h3>
+            <p className="vp-hint">Upload your Aadhaar or ID. NGO Admin will review and approve.</p>
+            <div className="vp-upload-area" onClick={() => fileRef.current.click()}>
+              {uploading ? (
+                <><div className="vp-spinner" /><p>Uploading…</p></>
+              ) : uploadedName ? (
+                <><span className="vp-upload-icon">📎</span><p>{uploadedName}</p><p className="vp-upload-sub">Click to replace</p></>
+              ) : (
+                <><span className="vp-upload-icon">⬆️</span><p>Click to upload document</p><p className="vp-upload-sub">PDF, JPG, PNG — max 10MB</p></>
+              )}
+              <input ref={fileRef} type="file" accept=".pdf,.jpg,.jpeg,.png" hidden onChange={uploadDocument} />
+            </div>
+            {profile.verification_status === "submitted" && !profile.verified && (
+              <div className="vp-info-pill">🕐 Document submitted — awaiting admin approval</div>
+            )}
+            {profile.verified && (
+              <div className="vp-verified-pill">✅ Verified by Admin</div>
+            )}
+          </section>
         </div>
 
         <div className="vp-right-col">
@@ -323,10 +354,12 @@ export default function VolunteerProfile({ user }) {
             )}
           </section>
 
+          {/* ── Phone + Document side by side ── */}
+
           {/* ── Section 5: Phone OTP ── */}
           <section className="vp-section">
             <h3>📱 Phone Identity</h3>
-            <div className="vp-field" style={{ maxWidth: 280, marginBottom: 16 }}>
+            <div className="vp-field" style={{ marginBottom: 12 }}>
               <label>Phone Number</label>
               <input
                 value={profile.phone}
@@ -373,29 +406,6 @@ export default function VolunteerProfile({ user }) {
             )}
           </section>
 
-          {/* ── Section 6: Document Upload ── */}
-          <section className="vp-section">
-            <h3>📄 Identity & Skill Documents</h3>
-            <p className="vp-hint">Upload your Aadhaar or ID. NGO Admin will review and approve.</p>
-
-            <div className="vp-upload-area" onClick={() => fileRef.current.click()}>
-              {uploading ? (
-                <><div className="vp-spinner" /><p>Uploading…</p></>
-              ) : uploadedName ? (
-                <><span className="vp-upload-icon">📎</span><p>{uploadedName}</p><p className="vp-upload-sub">Click to replace</p></>
-              ) : (
-                <><span className="vp-upload-icon">⬆️</span><p>Click to upload document</p><p className="vp-upload-sub">PDF, JPG, PNG — max 10MB</p></>
-              )}
-              <input ref={fileRef} type="file" accept=".pdf,.jpg,.jpeg,.png" hidden onChange={uploadDocument} />
-            </div>
-
-            {profile.verification_status === "submitted" && !profile.verified && (
-              <div className="vp-info-pill">🕐 Document submitted — awaiting admin approval</div>
-            )}
-            {profile.verified && (
-              <div className="vp-verified-pill">✅ Identity & skills verified by NGO Admin</div>
-            )}
-          </section>
         </div>
       </div>
 
