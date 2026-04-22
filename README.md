@@ -6,6 +6,7 @@
 [![Supabase](https://img.shields.io/badge/Supabase-Postgres%20%2B%20Realtime-3ECF8E?logo=supabase)](https://supabase.com)
 [![Gemini](https://img.shields.io/badge/Google%20Gemini-2.0%20Flash-4285F4?logo=google)](https://ai.google.dev)
 [![PostGIS](https://img.shields.io/badge/PostGIS-Geospatial-336791)](https://postgis.net)
+[![PWA](https://img.shields.io/badge/PWA-Installable-5A0FC8?logo=pwa)](https://web.dev/progressive-web-apps/)
 
 VolunteerBridge is a full-stack AI platform that intelligently matches verified volunteers to disaster relief and community crisis situations in real time. The moment an NGO admin reports a crisis, the system scores every available volunteer across skills, GPS proximity, trust score, and urgency — and surfaces the best matches in seconds.
 
@@ -69,6 +70,7 @@ This compresses what used to take hours of phone coordination into a few seconds
 | Gemini AI Integration | Issue description enhancement via Gemini 2.0 Flash + Gemini-powered in-app chatbot assistant |
 | Admin Console | Issues table, volunteer roster, approval queue, and smart match panel in one dashboard |
 | Rating System | Admins rate volunteers post-task; ratings feed directly into trust score recalculation |
+| PWA / Installable | `vite-plugin-pwa` — installable on Android & iOS home screen, offline map tile cache, 3 app shortcuts |
 
 ---
 
@@ -100,6 +102,7 @@ This ensures the most qualified, closest, and most reliable volunteers are alway
 | AI | Google Gemini 2.0 Flash (issue enhancement + chatbot) |
 | Backend & Auth | Supabase — Postgres, PostGIS, Auth, Realtime, Storage |
 | Geospatial | PostGIS `GEOGRAPHY(POINT, 4326)` + `ST_DWithin` + `ST_Distance` |
+| PWA | `vite-plugin-pwa` — Web App Manifest, Workbox service worker, offline caching |
 | Hosting | Firebase Hosting + Vercel (dual config) |
 | Language | JavaScript ES Modules |
 
@@ -111,6 +114,11 @@ This ensures the most qualified, closest, and most reliable volunteers are alway
 Google-Solution-Challenge-Hackathon/
 ├── frontend/
 │   ├── public/
+│   │   ├── icons/
+│   │   │   ├── pwa-192.png             # PWA home screen icon (192×192)
+│   │   │   └── pwa-512.png             # PWA splash / store icon (512×512)
+│   │   ├── favicon.svg
+│   │   └── hero-photo.png
 │   ├── src/
 │   │   ├── components/
 │   │   │   ├── NotificationBell.jsx    # Real-time notification bell with unread count
@@ -134,9 +142,10 @@ Google-Solution-Challenge-Hackathon/
 │   │   │   │   └── VolunteerProfile.jsx # Skills, OTP, document upload, location
 │   │   │   └── Dashboard.jsx           # Shell: sidebar nav, home overview, chatbot widget
 │   │   ├── App.jsx                     # Auth gate + session management
-│   │   └── main.jsx                    # Entry point
+│   │   └── main.jsx                    # Entry point + PWA service worker registration
+│   ├── generate-pwa-icons.html         # One-time helper to generate pwa-192.png & pwa-512.png
 │   ├── index.html
-│   ├── vite.config.js
+│   ├── vite.config.js                  # VitePWA plugin config + Workbox caching rules
 │   ├── firebase.json
 │   └── vercel.json
 ├── screenshots/                        # App screenshots
@@ -187,7 +196,16 @@ VITE_GEMINI_API_KEY=your_google_gemini_api_key
 
 Never commit this file. It is already covered by `.gitignore`.
 
-### 4. Install and run
+### 4. Generate PWA icons (one-time)
+
+Open `frontend/generate-pwa-icons.html` in any browser, download both PNG files, and save them as:
+
+```
+frontend/public/icons/pwa-192.png
+frontend/public/icons/pwa-512.png
+```
+
+### 5. Install and run
 
 ```bash
 cd frontend
@@ -195,7 +213,7 @@ npm install
 npm run dev
 ```
 
-The app runs at `http://localhost:5173`.
+The app runs at `http://localhost:5173`. The PWA install prompt appears automatically in Chrome/Edge on desktop and Android.
 
 ---
 

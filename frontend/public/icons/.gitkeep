@@ -1,0 +1,11 @@
+| Role-based Auth | Separate flows for Volunteers and NGO Admins via Supabase Auth |
+| Live Crisis Map | Real-time issue pins on a dark-mode Leaflet map with urgency icons, volunteer markers, and radius overlay |
+| Smart Match Engine | PostGIS `smart_match_volunteers()` SQL function scores by skill (35%), proximity (30%), trust (25%), availability (10%) |
+| Volunteer Verification | Document upload (Supabase Storage) + phone OTP flow + admin approval panel |
+| Task Lifecycle | Full accept to start to proof submission to resolved pipeline with Supabase Realtime sync |
+| Trust Score System | Auto-recalculated via `recalculate_trust_score()` RPC after each task completion |
+| Real-time Notifications | Supabase Realtime pushes task assignments, approvals, and resolution alerts |
+| Gemini AI Integration | Issue description enhancement via Gemini 2.0 Flash + Gemini-powered in-app chatbot assistant |
+| Admin Console | Issues table, volunteer roster, approval queue, and smart match panel in one dashboard |
+| Rating System | Admins rate volunteers post-task; ratings feed directly into trust score recalculation |
+| PWA / Installable | `vite-plugin-pwa` — installable on Android & iOS home screen, offline map tile cache, app shortcuts |
