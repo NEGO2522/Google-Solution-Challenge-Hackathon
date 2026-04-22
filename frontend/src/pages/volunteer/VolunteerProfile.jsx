@@ -17,28 +17,18 @@ export default function VolunteerProfile({ user, onRefreshUser }) {
   // ── profile state ──
   const [profile, setProfile] = useState({
     name: user.name || "",
-    phone: user.phone || "",
     city: user.city || "",
     skills: user.skills || [],
     availability: user.availability || "",
     lat: user.lat || null,
     lng: user.lng || null,
     doc_url: user.doc_url || null,
-    phone_verified: user.phone_verified || false,
     verification_status: user.verification_status || "pending",
     verified: user.verified || false,
   });
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [loadingProfile, setLoadingProfile] = useState(true);
-
-  // ── OTP state ──
-  const [otpStep, setOtpStep] = useState(
-    user.phone_verified ? "done" : "idle"
-  );
-  const [otpCode, setOtpCode] = useState("");
-  const [otpInput, setOtpInput] = useState("");
-  const [otpError, setOtpError] = useState("");
 
   // ── document upload ──
   const [uploading, setUploading] = useState(false);
@@ -62,7 +52,6 @@ export default function VolunteerProfile({ user, onRefreshUser }) {
       .single();
     if (data) {
       setProfile((p) => ({ ...p, ...data }));
-      if (data.phone_verified) setOtpStep("done");
       if (data.doc_url) setUploadedName(data.doc_url.split("/").pop());
     }
     setLoadingProfile(false);
@@ -103,7 +92,6 @@ export default function VolunteerProfile({ user, onRefreshUser }) {
       id: user.id,
       name: profile.name,
       email: user.email,
-      phone: profile.phone,
       city: profile.city,
       skills: profile.skills,
       availability: profile.availability,
@@ -113,7 +101,6 @@ export default function VolunteerProfile({ user, onRefreshUser }) {
         ? `POINT(${profile.lng} ${profile.lat})`
         : null,
       // Preserve these — never overwrite with false
-      phone_verified: profile.phone_verified ?? false,
       verification_status: profile.verification_status ?? "pending",
       doc_url: profile.doc_url ?? null,
       updated_at: new Date().toISOString(),
@@ -131,76 +118,6 @@ export default function VolunteerProfile({ user, onRefreshUser }) {
     } else {
       alert("Save failed: " + error.message);
     }
-  }
-
-  // ── OTP: send (simulated — in prod use Twilio/SMS via Supabase Edge Function) ──
-  async function sendOtp() {
-    if (!profile.phone || profile.phone.length < 8) {
-      setOtpError("Enter a valid phone number first.");
-      return;
-    }
-    setOtpStep("sending");
-    setOtpError("");
-    // Generate a 6-digit code
-    const code = Math.floor(100000 + Math.random() * 900000).toString();
-    setOtpCode(code);
-
-    // Store OTP in Supabase
-    await supabase.from("otp_verifications").insert({
-      user_id: user.id,
-      phone: profile.phone,
-      otp_code: code,
-      expires_at: new Date(Date.now() + 10 * 60 * 1000).toISOString(),
-    });
-
-    // In production: call Edge Function to send SMS via Twilio
-    // For now: show code in UI (demo mode)
-    setOtpStep("sent");
-  }
-
-  async function verifyOtp() {
-    setOtpStep("verifying");
-    setOtpError("");
-
-    // Check OTP in DB
-    const { data } = await supabase
-      .from("otp_verifications")
-      .select("*")
-      .eq("user_id", user.id)
-      .eq("phone", profile.phone)
-      .eq("verified", false)
-      .order("created_at", { ascending: false })
-      .limit(1)
-      .single();
-
-    if (!data) {
-      setOtpError("OTP not found. Please resend.");
-      setOtpStep("sent");
-      return;
-    }
-
-    if (new Date(data.expires_at) < new Date()) {
-      setOtpError("OTP expired. Please resend.");
-      setOtpStep("sent");
-      return;
-    }
-
-    if (data.otp_code !== otpInput) {
-      setOtpError("Incorrect OTP. Try again.");
-      setOtpStep("sent");
-      return;
-    }
-
-    // Mark verified
-    await supabase.from("otp_verifications").update({ verified: true }).eq("id", data.id);
-    await supabase.from("volunteer_profiles").upsert({
-      id: user.id, name: profile.name, email: user.email,
-      phone_verified: true,
-    }, { onConflict: "id" });
-
-    setProfile((p) => ({ ...p, phone_verified: true }));
-    setOtpStep("done");
-    onRefreshUser?.();
   }
 
   // ── Document upload ──
@@ -351,58 +268,6 @@ export default function VolunteerProfile({ user, onRefreshUser }) {
               <button className="vp-loc-btn" onClick={getLocation} disabled={locating}>
                 {locating ? "📡 Detecting…" : "📍 Use My Current Location"}
               </button>
-            )}
-          </section>
-
-          {/* ── Phone + Document side by side ── */}
-
-          {/* ── Section 5: Phone OTP ── */}
-          <section className="vp-section">
-            <h3>📱 Phone Identity</h3>
-            <div className="vp-field" style={{ marginBottom: 12 }}>
-              <label>Phone Number</label>
-              <input
-                value={profile.phone}
-                onChange={(e) => setProfile(p => ({ ...p, phone: e.target.value }))}
-                placeholder="+91 XXXXX XXXXX"
-                disabled={otpStep === "done"}
-              />
-            </div>
-
-            {otpStep === "idle" && (
-              <button className="vp-action-btn" onClick={sendOtp}>Send OTP</button>
-            )}
-
-            {otpStep === "sending" && (
-              <p className="vp-hint">Sending OTP…</p>
-            )}
-
-            {otpStep === "sent" && (
-              <div className="vp-otp-box">
-                {/* Demo mode: show the OTP */}
-                <div className="vp-otp-demo">
-                  🔔 Demo mode — your OTP is: <strong>{otpCode}</strong>
-                  <span className="vp-otp-note">(In production this goes via SMS)</span>
-                </div>
-                <div className="vp-otp-row">
-                  <input
-                    value={otpInput}
-                    onChange={(e) => setOtpInput(e.target.value)}
-                    placeholder="Enter 6-digit OTP"
-                    maxLength={6}
-                    className="vp-otp-input"
-                  />
-                  <button className="vp-action-btn" onClick={verifyOtp}>Verify</button>
-                  <button className="vp-link-btn" onClick={sendOtp}>Resend</button>
-                </div>
-                {otpError && <span className="vp-error">{otpError}</span>}
-              </div>
-            )}
-
-            {otpStep === "verifying" && <p className="vp-hint">Verifying…</p>}
-
-            {otpStep === "done" && (
-              <div className="vp-verified-pill">✅ Phone number verified</div>
             )}
           </section>
 

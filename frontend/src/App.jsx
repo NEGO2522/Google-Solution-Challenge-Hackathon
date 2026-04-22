@@ -54,6 +54,7 @@ function withTimeout(promise, ms, fallback) {
 export default function App() {
   const [user, setUser]           = useState(null);
   const [checked, setChecked]     = useState(false);
+  const [fading, setFading]       = useState(true); // keeps content invisible during auth restore
 
 
   // ── Re-fetch profile from DB — uses ref to avoid stale closure ──
@@ -117,7 +118,15 @@ export default function App() {
       } catch (err) {
         console.warn("init error:", err.message);
       } finally {
-        if (!cancelled) setChecked(true);
+        if (!cancelled) {
+          setChecked(true);
+          // Small RAF delay so the correct screen is painted before we reveal it
+          requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+              if (!cancelled) setFading(false);
+            });
+          });
+        }
       }
     }
 
@@ -185,6 +194,12 @@ export default function App() {
     );
   }
 
-  if (user) return <Dashboard user={user} onLogout={handleLogout} onRefreshUser={stableRefreshUser} />;
-  return <AuthPage onAuthSuccess={handleAuthSuccess} />;
+  // Render the correct screen but keep it invisible for 2 animation frames
+  // so the browser never paints the wrong screen — eliminates auth flash
+  const screenStyle = fading
+    ? { opacity: 0, pointerEvents: "none" }
+    : { opacity: 1, transition: "opacity 0.15s ease" };
+
+  if (user) return <div style={screenStyle}><Dashboard user={user} onLogout={handleLogout} onRefreshUser={stableRefreshUser} /></div>;
+  return <div style={screenStyle}><AuthPage onAuthSuccess={handleAuthSuccess} /></div>;
 }

@@ -63,7 +63,7 @@ This compresses what used to take hours of phone coordination into a few seconds
 | Role-based Auth | Separate flows for Volunteers and NGO Admins via Supabase Auth |
 | Live Crisis Map | Real-time issue pins on a dark-mode Leaflet map with urgency icons, volunteer markers, and radius overlay |
 | Smart Match Engine | PostGIS `smart_match_volunteers()` SQL function scores by skill (35%), proximity (30%), trust (25%), availability (10%) |
-| Volunteer Verification | Document upload (Supabase Storage) + phone OTP flow + admin approval panel |
+| Volunteer Verification | Document upload (Supabase Storage) + admin approval panel |
 | Task Lifecycle | Full accept to start to proof submission to resolved pipeline with Supabase Realtime sync |
 | Trust Score System | Auto-recalculated via `recalculate_trust_score()` RPC after each task completion |
 | Real-time Notifications | Supabase Realtime pushes task assignments, approvals, and resolution alerts |
@@ -139,7 +139,7 @@ Google-Solution-Challenge-Hackathon/
 │   │   │   │   └── MapView.jsx         # Live crisis map with filters, radius, side panel
 │   │   │   ├── volunteer/
 │   │   │   │   ├── MyTasks.jsx         # Task list: accept, start, submit proof
-│   │   │   │   └── VolunteerProfile.jsx # Skills, OTP, document upload, location
+│   │   │   │   ├── VolunteerProfile.jsx # Skills, document upload, location, trust score
 │   │   │   └── Dashboard.jsx           # Shell: sidebar nav, home overview, chatbot widget
 │   │   ├── App.jsx                     # Auth gate + session management
 │   │   └── main.jsx                    # Entry point + PWA service worker registration

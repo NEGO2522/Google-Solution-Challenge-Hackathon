@@ -26,7 +26,7 @@ export default function AuthPage({ onAuthSuccess }) {
   const [form, setForm] = useState({
     name: "", email: "", password: "", confirmPassword: "",
     ngoName: "", ngoRegNumber: "", ngoCity: "",
-    skills: [], city: "", availability: "", phone: "",
+    skills: [], city: "", availability: "",
   });
 
   const set = (f, v) => {
@@ -66,7 +66,7 @@ export default function AuthPage({ onAuthSuccess }) {
   const handleSignup = async () => {
     const meta = role === "ngo_admin"
       ? { name: form.name, role, ngoName: form.ngoName, ngoRegNumber: form.ngoRegNumber, ngoCity: form.ngoCity }
-      : { name: form.name, role, city: form.city, phone: form.phone, availability: form.availability, skills: form.skills };
+      : { name: form.name, role, city: form.city, availability: form.availability, skills: form.skills };
 
     const { data, error } = await supabase.auth.signUp({
       email: form.email, password: form.password,
@@ -107,7 +107,7 @@ export default function AuthPage({ onAuthSuccess }) {
   const reset = (newMode) => {
     setMode(newMode); setStep(1); setErrors({}); setServerError(""); setEmailSent(false);
     setForm({ name:"", email:"", password:"", confirmPassword:"",
-      ngoName:"", ngoRegNumber:"", ngoCity:"", skills:[], city:"", availability:"", phone:"" });
+      ngoName:"", ngoRegNumber:"", ngoCity:"", skills:[], city:"", availability:"" });
   };
 
   /* ── Email sent screen ── */
@@ -315,19 +315,12 @@ export default function AuthPage({ onAuthSuccess }) {
             {/* STEP 2 — Volunteer */}
             {isSignup && step === 2 && !isAdmin && (
               <>
-                <div className="a-field-row">
-                  <div className="a-field">
-                    <label>City</label>
-                    <input type="text" placeholder="Your city"
-                      value={form.city} onChange={e => set("city", e.target.value)}
-                      className={errors.city ? "err" : ""} />
-                    {errors.city && <span className="a-err">{errors.city}</span>}
-                  </div>
-                  <div className="a-field">
-                    <label>Phone <span className="a-opt">optional</span></label>
-                    <input type="tel" placeholder="+91 XXXXX XXXXX"
-                      value={form.phone} onChange={e => set("phone", e.target.value)} />
-                  </div>
+                <div className="a-field">
+                  <label>City</label>
+                  <input type="text" placeholder="Your city"
+                    value={form.city} onChange={e => set("city", e.target.value)}
+                    className={errors.city ? "err" : ""} />
+                  {errors.city && <span className="a-err">{errors.city}</span>}
                 </div>
 
                 <div className="a-field">

@@ -119,22 +119,8 @@
 
 /* OTP */
 .vp-otp-box { display: flex; flex-direction: column; gap: 8px; }
-.vp-otp-demo {
-  background: rgba(245,158,11,0.07); border: 1px solid rgba(245,158,11,0.15);
-  border-radius: 7px; padding: 10px; font-size: 11px; color: #f59e0b;
-  display: flex; flex-direction: column; gap: 3px;
-}
-.vp-otp-demo strong { font-size: 16px; letter-spacing: 5px; font-weight: 900; color: #fff; }
-.vp-otp-note { font-size: 10px; color: rgba(245,158,11,0.6); }
 
 .vp-otp-row { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
-.vp-otp-input {
-  background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);
-  border-radius: 6px; padding: 7px 10px; color: #fff; font-size: 14px;
-  font-weight: 800; letter-spacing: 4px; outline: none; width: 130px;
-  transition: border-color 0.15s; font-family: inherit; text-align: center;
-}
-.vp-otp-input:focus { border-color: #3b82f6; }
 .vp-error { font-size: 10px; color: #f87171; font-weight: 600; }
 
 .vp-verified-pill {

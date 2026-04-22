@@ -148,7 +148,7 @@ function HomeDashboard({ user, isAdmin, onNavigate }) {
     : [
         { id: "tasks",   icon: "✓", title: "My Tasks",       desc: "Accept & complete assigned tasks"      },
         { id: "map",     icon: "◎", title: "Explore Map",    desc: "Find help requests near you"           },
-        { id: "profile", icon: "◯", title: "My Profile",     desc: "Verify skills & build trust score"     },
+        { id: "profile", icon: "◯", title: "My Profile",     desc: "Update skills & build trust score"     },
         { id: "issues",  icon: "⚑", title: "Report Issue",   desc: "Flag a local emergency"                },
       ];
 
@@ -160,7 +160,6 @@ function HomeDashboard({ user, isAdmin, onNavigate }) {
     { label: "Status",   val: user.verified ? "Verified" : "Pending",             cls: user.verified ? "green" : "amber" },
     { label: "Rating",   val: user.avg_rating ? `⭐ ${user.avg_rating}` : "None",  cls: "" },
     { label: "Done",     val: `${user.tasks_completed ?? 0} tasks`,               cls: "" },
-    { label: "Phone",    val: user.phone_verified ? "Verified ✓" : "Not verified",  cls: user.phone_verified ? "green" : "amber" },
     { label: "City",     val: user.city || "Not set",                             cls: "" },
     { label: "Avail.",   val: user.availability || "Not set",                     cls: "" },
   ];
@@ -241,7 +240,7 @@ function HomeDashboard({ user, isAdmin, onNavigate }) {
             <div className="home-nudge-icon">🔐</div>
             <div className="home-nudge-text">
               <strong>Complete Verification</strong>
-              <p>Upload your ID and verify your phone to receive task assignments from NGO admins.</p>
+              <p>Upload your ID document to get verified and receive task assignments from NGO admins.</p>
             </div>
             <button className="home-nudge-btn" onClick={() => onNavigate("profile")}>Verify Now →</button>
           </div>
@@ -287,7 +286,6 @@ function ProfileStrength({ user, isAdmin, onNavigate }) {
     { label: "Name saved",      done: !!user.name,                         action: "profile"},
     { label: "Skills added",    done: (user.skills?.length||0) > 0,        action: "profile"},
     { label: "Location set",    done: !!user.city,                         action: "profile"},
-    { label: "Phone verified",  done: !!user.phone_verified,               action: "profile"},
     { label: "Doc uploaded",    done: !!user.doc_url,                      action: "profile"},
     { label: "Admin approved",  done: !!user.verified,                     action: null    },
   ];
