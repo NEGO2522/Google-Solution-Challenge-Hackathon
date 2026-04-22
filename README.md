@@ -16,15 +16,12 @@ VolunteerBridge is a full-stack AI platform that intelligently matches verified 
 
 ---
 
-## Live Demo & Video
+## Live App
 
-| | |
+| Environment | URL |
 |---|---|
-| **Live App (Firebase)** | [https://volunteerbridge-310d5.firebaseapp.com/](https://volunteerbridge-310d5.firebaseapp.com/) |
-| **Live App (Vercel)** | [https://google-solution-challenge-hackathon.vercel.app/](https://google-solution-challenge-hackathon.vercel.app/) |
-| **Full Demo Guide** | [DEMO.md](./DEMO.md) — credentials, timestamped walkthrough, full flow |
-
-> See **[DEMO.md](./DEMO.md)** for demo login credentials and a step-by-step walkthrough of the complete volunteer → task → completion flow.
+| **Production (Firebase)** | [https://volunteerbridge-310d5.firebaseapp.com/](https://volunteerbridge-310d5.firebaseapp.com/) |
+| **Alternate (Vercel)** | [https://google-solution-challenge-hackathon.vercel.app/](https://google-solution-challenge-hackathon.vercel.app/) |
 
 ---
 

@@ -69,7 +69,7 @@ Use this format:
 
 **Examples:**
 ```
-feat/sms-otp-twilio
+feat/smart-match-scoring
 fix/map-blank-on-mobile
 docs/add-screenshots
 refactor/split-admin-dashboard
@@ -105,7 +105,7 @@ Keep the summary under 72 characters. Use the body for context if needed.
 4. Open a PR against `main` with:
    - A clear title following commit style
    - A description of **what** you changed and **why**
-   - Screenshots or a short screen recording if it's a UI change
+   - Screenshots if it's a UI change
 5. A maintainer will review within a few days
 6. Address any review comments, then request re-review
 

@@ -1,17 +1,6 @@
 # VolunteerBridge — Demo Guide
 
 > **Google Solution Challenge Submission**
-> A 2-minute walkthrough of the full volunteer → task → completion flow.
-
----
-
-## Demo Video
-
-[![Watch the Demo](https://img.shields.io/badge/▶_Watch_Demo-Loom-625DF5?style=for-the-badge&logo=loom)](https://loom.com/share/YOUR_LOOM_LINK_HERE)
-
-> **[https://loom.com/share/YOUR_LOOM_LINK_HERE](https://loom.com/share/YOUR_LOOM_LINK_HERE)**
->
-> Duration: ~2 minutes | No login required to view
 
 ---
 
@@ -37,18 +26,18 @@ Use these pre-seeded accounts (from `seed_volunteers_with_auth.sql`) to explore 
 
 ---
 
-## What the Demo Covers (2-Minute Flow)
+## What the Demo Covers
 
-The video walks through the **complete end-to-end lifecycle** of a crisis event:
+The following steps walk through the **complete end-to-end lifecycle** of a crisis event:
 
-### Step 1 — NGO Admin: Report a Crisis (0:00–0:25)
+### Step 1 — NGO Admin: Report a Crisis
 - Admin logs in and opens the **Issue Report** form
 - Drops a GPS pin on the live **Leaflet crisis map** for the crisis location
 - Types a rough description → clicks **"Enhance with Gemini AI"**
 - Gemini 2.0 Flash rewrites it into a structured, actionable crisis brief in real time
 - Admin submits the issue (urgency: **Critical**, category: **Medical**)
 
-### Step 2 — Smart Match Engine Runs (0:25–0:50)
+### Step 2 — Smart Match Engine Runs
 - Admin opens **Admin Dashboard → Smart Match panel**
 - Clicks "Find Best Volunteers" for the new issue
 - The PostGIS `smart_match_volunteers()` function scores all available volunteers in real time across:
@@ -56,18 +45,18 @@ The video walks through the **complete end-to-end lifecycle** of a crisis event:
 - Top-ranked volunteers appear with their **match %, distance, and skill tags**
 - Admin assigns the top match with one click
 
-### Step 3 — Volunteer: Receives & Accepts the Task (0:50–1:20)
+### Step 3 — Volunteer: Receives & Accepts the Task
 - Volunteer logs in — the **real-time notification bell** lights up immediately (Supabase Realtime)
 - Volunteer opens **My Tasks** and sees the newly assigned crisis with full details
 - Clicks **"Accept"** → status updates live on the admin dashboard simultaneously
 - Clicks **"Start Task"** → task moves to `in_progress`
 
-### Step 4 — Volunteer: Submits Proof of Work (1:20–1:40)
+### Step 4 — Volunteer: Submits Proof of Work
 - After completing the action on the ground, the volunteer clicks **"Submit Proof"**
 - Enters a completion report (e.g., "Administered first aid, patient stabilised")
 - Submits → task status flips to `completed`; admin receives a real-time notification
 
-### Step 5 — Admin: Rates the Volunteer & Trust Score Updates (1:40–2:00)
+### Step 5 — Admin: Rates the Volunteer & Trust Score Updates
 - Admin opens the **Rating Panel** and rates the volunteer (1–5 stars + comment)
 - The `recalculate_trust_score()` Postgres function fires automatically
 - Volunteer's **Trust Score badge** updates live on their profile
@@ -86,14 +75,14 @@ The video walks through the **complete end-to-end lifecycle** of a crisis event:
 
 ---
 
-## Key Technical Moments to Watch
+## Key Technical Highlights
 
-| Timestamp | What to Notice |
+| Feature | What to Notice |
 |---|---|
-| ~0:18 | Gemini AI issue enhancement — raw text → structured brief in ~1 second |
-| ~0:35 | Smart Match scores appear — PostGIS running a weighted geospatial query live |
-| ~0:52 | Notification bell badge updates on Volunteer dashboard without a page refresh |
-| ~1:45 | Trust Score re-renders immediately after admin submits a rating |
+| Gemini AI enhancement | Raw description → structured crisis brief in ~1 second |
+| Smart Match scores | PostGIS running a weighted geospatial query live |
+| Realtime notifications | Notification bell updates on Volunteer dashboard without a page refresh |
+| Trust Score update | Re-renders immediately after admin submits a rating |
 
 ---
 
