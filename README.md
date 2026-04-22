@@ -21,8 +21,6 @@ VolunteerBridge is a full-stack AI platform that intelligently matches verified 
 |---|---|
 | ![Smart Match](./screenshots/03-smart-match.png) | ![Issue Report](./screenshots/04-issue-report.png) |
 
-> See [`screenshots/README.md`](./screenshots/README.md) for instructions on adding screenshots.
-
 ---
 
 ## The Problem
@@ -45,20 +43,20 @@ This compresses what used to take hours of phone coordination into a few seconds
 
 ---
 
-## Live Features (All Implemented)
+## Live Features
 
 | Feature | Details |
 |---|---|
-| 🔐 Role-based Auth | Separate flows for Volunteers and NGO Admins via Supabase Auth |
-| 🗺️ Live Crisis Map | Real-time issue pins on a dark-mode Leaflet map with urgency icons, volunteer markers, and radius overlay |
-| 🤖 Smart Match Engine | PostGIS `smart_match_volunteers()` SQL function scores by skill (35%), proximity (30%), trust (25%), availability (10%) |
-| ✅ Volunteer Verification | Document upload (Supabase Storage) + phone OTP flow + admin approval panel |
-| 📋 Task Lifecycle | Full accept → start → proof submission → resolved pipeline with Supabase Realtime sync |
-| ⭐ Trust Score System | Auto-recalculated via `recalculate_trust_score()` RPC after each task completion |
-| 🔔 Real-time Notifications | Supabase Realtime pushes task assignments, approvals, and resolution alerts |
-| ✨ Gemini AI Integration | Issue description enhancement via Gemini 2.0 Flash + Gemini-powered in-app chatbot assistant |
-| 📊 Admin Console | Issues table, volunteer roster, approval queue, and smart match panel in one dashboard |
-| 🏅 Rating System | Admins rate volunteers post-task; ratings feed directly into trust score recalculation |
+| Role-based Auth | Separate flows for Volunteers and NGO Admins via Supabase Auth |
+| Live Crisis Map | Real-time issue pins on a dark-mode Leaflet map with urgency icons, volunteer markers, and radius overlay |
+| Smart Match Engine | PostGIS `smart_match_volunteers()` SQL function scores by skill (35%), proximity (30%), trust (25%), availability (10%) |
+| Volunteer Verification | Document upload (Supabase Storage) + phone OTP flow + admin approval panel |
+| Task Lifecycle | Full accept to start to proof submission to resolved pipeline with Supabase Realtime sync |
+| Trust Score System | Auto-recalculated via `recalculate_trust_score()` RPC after each task completion |
+| Real-time Notifications | Supabase Realtime pushes task assignments, approvals, and resolution alerts |
+| Gemini AI Integration | Issue description enhancement via Gemini 2.0 Flash + Gemini-powered in-app chatbot assistant |
+| Admin Console | Issues table, volunteer roster, approval queue, and smart match panel in one dashboard |
+| Rating System | Admins rate volunteers post-task; ratings feed directly into trust score recalculation |
 
 ---
 
@@ -103,36 +101,36 @@ Google-Solution-Challenge-Hackathon/
 │   ├── public/
 │   ├── src/
 │   │   ├── components/
-│   │   │   ├── NotificationBell.jsx   # Real-time notification bell with unread count
-│   │   │   └── TrustScore.jsx         # Animated trust score display card
+│   │   │   ├── NotificationBell.jsx    # Real-time notification bell with unread count
+│   │   │   └── TrustScore.jsx          # Animated trust score display card
 │   │   ├── context/
 │   │   │   └── NotificationContext.jsx # Global notification state + Supabase Realtime
 │   │   ├── lib/
-│   │   │   └── supabase.js            # Supabase client initialisation
+│   │   │   └── supabase.js             # Supabase client initialisation
 │   │   ├── pages/
 │   │   │   ├── admin/
-│   │   │   │   ├── AdminDashboard.jsx # Issues, volunteer management, approvals, smart match
-│   │   │   │   └── RatingPanel.jsx    # Rate completed volunteer tasks
+│   │   │   │   ├── AdminDashboard.jsx  # Issues, volunteer management, approvals, smart match
+│   │   │   │   └── RatingPanel.jsx     # Rate completed volunteer tasks
 │   │   │   ├── auth/
-│   │   │   │   └── AuthPage.jsx       # Login + signup with role selection
+│   │   │   │   └── AuthPage.jsx        # Login + signup with role selection
 │   │   │   ├── issues/
-│   │   │   │   └── IssueReport.jsx    # Crisis report form with map pin + Gemini AI enhance
+│   │   │   │   └── IssueReport.jsx     # Crisis report form with map pin + Gemini AI enhance
 │   │   │   ├── map/
-│   │   │   │   └── MapView.jsx        # Live crisis map with filters, radius, side panel
+│   │   │   │   └── MapView.jsx         # Live crisis map with filters, radius, side panel
 │   │   │   ├── volunteer/
-│   │   │   │   ├── MyTasks.jsx        # Task list: accept, start, submit proof
+│   │   │   │   ├── MyTasks.jsx         # Task list: accept, start, submit proof
 │   │   │   │   └── VolunteerProfile.jsx # Skills, OTP, document upload, location
-│   │   │   └── Dashboard.jsx          # Shell: sidebar nav, home overview, chatbot widget
-│   │   ├── App.jsx                    # Auth gate + session management
-│   │   └── main.jsx                   # Entry point
+│   │   │   └── Dashboard.jsx           # Shell: sidebar nav, home overview, chatbot widget
+│   │   ├── App.jsx                     # Auth gate + session management
+│   │   └── main.jsx                    # Entry point
 │   ├── index.html
 │   ├── vite.config.js
 │   ├── firebase.json
 │   └── vercel.json
-├── screenshots/                       # App screenshots for README
-├── supabase_FULL_SETUP.sql            # Complete DB schema, RLS policies, PostGIS functions
-├── seed_volunteers_with_auth.sql      # Demo data for testing
-├── CONTRIBUTING.md                    # Contribution guide
+├── screenshots/                        # App screenshots
+├── supabase_FULL_SETUP.sql             # Complete DB schema, RLS policies, PostGIS functions
+├── seed_volunteers_with_auth.sql       # Demo data for testing
+├── CONTRIBUTING.md                     # Contribution guide
 └── README.md
 ```
 
@@ -155,14 +153,14 @@ cd VolunteerBridge
 
 ### 2. Set up the Supabase database
 
-Open your Supabase project → SQL Editor → New Query, then run these scripts in order:
+Open your Supabase project, go to SQL Editor, create a New Query, then run these scripts in order:
 
 ```
-1. supabase_FULL_SETUP.sql       ← tables, RLS, PostGIS functions
-2. seed_volunteers_with_auth.sql ← optional demo data
+1. supabase_FULL_SETUP.sql       -- tables, RLS, PostGIS functions
+2. seed_volunteers_with_auth.sql -- optional demo data
 ```
 
-Also create a private **Storage bucket** named `volunteer-docs` for ID document uploads.
+Also create a private Storage bucket named `volunteer-docs` for ID document uploads.
 
 ### 3. Configure environment variables
 
@@ -174,7 +172,7 @@ VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
 VITE_GEMINI_API_KEY=your_google_gemini_api_key
 ```
 
-> ⚠️ Never commit this file. It is already in `.gitignore`.
+Never commit this file. It is already covered by `.gitignore`.
 
 ### 4. Install and run
 
@@ -188,21 +186,22 @@ The app runs at `http://localhost:5173`.
 
 ---
 
-## Database Schema (Key Tables)
+## Database Schema
 
 | Table | Purpose |
 |---|---|
 | `volunteer_profiles` | Skills, GPS location, trust score, verification status |
 | `ngo_profiles` | NGO name, city, admin user mapping |
 | `issues` | Crisis reports with PostGIS `GEOGRAPHY(POINT)` location |
-| `task_assignments` | Volunteer↔issue assignments with full lifecycle status |
+| `task_assignments` | Volunteer-to-issue assignments with full lifecycle status |
 | `ratings` | Admin ratings per assignment, feeds trust score |
 | `notifications` | Real-time notification queue per user |
 | `otp_verifications` | Phone OTP records with expiry |
 
 Key PostgreSQL functions:
+
 - `smart_match_volunteers(p_issue_id, p_limit)` — returns ranked volunteer matches
-- `recalculate_trust_score(p_volunteer_id)` — recomputes score from ratings + completion history
+- `recalculate_trust_score(p_volunteer_id)` — recomputes score from ratings and completion history
 - `volunteers_near(lat, lng, radius_km)` — proximity search using PostGIS ST_DWithin
 
 ---
@@ -211,7 +210,7 @@ Key PostgreSQL functions:
 
 - **SDG 11** — Sustainable Cities and Communities (faster community crisis response)
 - **SDG 13** — Climate Action (disaster relief volunteer coordination)
-- **SDG 17** — Partnerships for the Goals (NGO ↔ volunteer network)
+- **SDG 17** — Partnerships for the Goals (NGO and volunteer network)
 
 ---
 
@@ -225,7 +224,7 @@ Key PostgreSQL functions:
 
 ## Contributing
 
-We welcome contributions! Please read [CONTRIBUTING.md](./CONTRIBUTING.md) before opening a PR.
+We welcome contributions. Please read [CONTRIBUTING.md](./CONTRIBUTING.md) before opening a pull request.
 
 ---
 
