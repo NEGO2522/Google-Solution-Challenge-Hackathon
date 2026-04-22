@@ -8,6 +8,10 @@
 [![PostGIS](https://img.shields.io/badge/PostGIS-Geospatial-336791)](https://postgis.net)
 [![PWA](https://img.shields.io/badge/PWA-Installable-5A0FC8?logo=pwa)](https://web.dev/progressive-web-apps/)
 
+![VolunteerBridge Demo — Smart Match + Live Map](./screenshots/demo.gif)
+
+> *NGO admin reports a crisis → AI scores every volunteer by skill, proximity & trust → best match assigned in seconds.*
+
 VolunteerBridge is a full-stack AI platform that intelligently matches verified volunteers to disaster relief and community crisis situations in real time. The moment an NGO admin reports a crisis, the system scores every available volunteer across skills, GPS proximity, trust score, and urgency — and surfaces the best matches in seconds.
 
 ---
@@ -33,6 +37,8 @@ VolunteerBridge is a full-stack AI platform that intelligently matches verified 
 | Smart Match Engine | Issue Report + Gemini AI |
 |---|---|
 | ![Smart Match](./screenshots/03-smart-match.png) | ![Issue Report](./screenshots/04-issue-report.png) |
+
+> **Recording the demo GIF?** See the guide at the bottom of this file.
 
 ---
 
@@ -227,7 +233,6 @@ The app runs at `http://localhost:5173`. The PWA install prompt appears automati
 | `task_assignments` | Volunteer-to-issue assignments with full lifecycle status |
 | `ratings` | Admin ratings per assignment, feeds trust score |
 | `notifications` | Real-time notification queue per user |
-| `otp_verifications` | Phone OTP records with expiry |
 
 Key PostgreSQL functions:
 
@@ -268,3 +273,41 @@ Built for the **Google Solution Challenge** by developers passionate about using
 ## License
 
 This project is licensed under the terms of the [LICENSE](./LICENSE) file.
+
+---
+
+## Recording the Demo GIF
+
+The GIF at the top of this README (`screenshots/demo.gif`) should show the core AI matching flow. Here’s the exact sequence to record:
+
+### What to capture (90–120 seconds of footage → ~15 sec GIF at 5 fps)
+
+| # | Step | What the judge sees |
+|---|---|---|
+| 1 | Log in as NGO Admin | Role-based auth |
+| 2 | Open Admin Console → click an open issue | Issue detail |
+| 3 | Click **Find Best Volunteers** | Smart Match modal opens, ranked list animates in |
+| 4 | Hover over a volunteer card | Skill %, distance, trust score visible |
+| 5 | Click **Assign** | Toast notification fires |
+| 6 | Switch to **Live Map** tab | Crisis pin + volunteer marker on dark map |
+| 7 | Open a map side panel | Issue details overlay |
+
+### Tools
+
+**Windows — LICEcap (recommended, free)**
+1. Download from [https://www.cockos.com/licecap/](https://www.cockos.com/licecap/)
+2. Open your app at `http://localhost:5173`
+3. Drag the LICEcap frame over the browser window
+4. Set: **FPS = 8**, check **Title Frame**
+5. Click **Record** → save as `screenshots/demo.gif`
+6. Aim for under **3 MB** — crop tightly to the app window, not the whole screen
+
+**Alternative — ScreenToGif (more control)**
+1. Download from [https://www.screentogif.com/](https://www.screentogif.com/)
+2. Record → Editor → reduce to 8 fps → Optimize → Save as GIF
+
+### File size tips
+- Crop to just the app window (1100×700px is ideal)
+- 8 fps is enough — higher fps bloats file size
+- Use ScreenToGif’s **Quantize** option to reduce to 128 colours
+- Target: **under 4 MB** so GitHub renders it inline without clicking
