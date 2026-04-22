@@ -1,5 +1,6 @@
 {
   "name": "volunteerbridge",
+  "description": "AI-powered volunteer allocation platform that matches verified volunteers to disaster relief and community crisis situations in real time using skills, GPS proximity, trust score, and urgency scoring.",
   "private": true,
   "version": "0.0.0",
   "type": "module",
