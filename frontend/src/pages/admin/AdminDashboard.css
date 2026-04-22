@@ -33,7 +33,51 @@
 
 /* ── Stats ── */
 .adc-stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
-@media (max-width: 700px) { .adc-stats-row { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 700px) {
+  .adc-stats-row { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* Tabs scroll horizontally on mobile */
+@media (max-width: 700px) {
+  .adc-topbar { flex-direction: column; align-items: flex-start; gap: 10px; padding-bottom: 12px; }
+  .adc-tabs {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    flex-wrap: nowrap;
+    padding-bottom: 4px;
+    gap: 6px;
+  }
+  .adc-tab { flex-shrink: 0; white-space: nowrap; }
+
+  /* Table: hide less-critical columns */
+  .adc-table th:nth-child(4),
+  .adc-table td:nth-child(4),
+  .adc-table th:nth-child(5),
+  .adc-table td:nth-child(5) { display: none; }
+
+  /* Approval cards stack */
+  .adc-approval-card { flex-direction: column; gap: 12px; }
+  .adc-apv-actions { width: 100%; justify-content: flex-start; }
+  .adc-btn-approve, .adc-btn-reject { flex: 1; text-align: center; }
+
+  /* Match issue grid: single col */
+  .adc-match-issue-grid { grid-template-columns: 1fr; }
+
+  /* Create issue form: single col */
+  .ci-form { grid-template-columns: 1fr; gap: 14px; }
+  .ci-right { padding: 14px; }
+  .ci-urgency-row { grid-template-columns: repeat(2, 1fr); }
+
+  /* Match modal full screen */
+  .adc-modal-overlay { padding: 0; align-items: flex-end; }
+  .adc-modal { border-radius: 16px 16px 0 0; max-height: 90vh; }
+
+  /* Match card compact */
+  .adc-match-card { gap: 8px; padding: 10px; }
+  .adc-match-rank { display: none; }
+  .adc-match-meta { flex-direction: column; gap: 2px; }
+}
 
 .adc-stat {
   background: #0d0d0d;

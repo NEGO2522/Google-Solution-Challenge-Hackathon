@@ -3,7 +3,25 @@
 .mt-header p  { margin: 0; font-size: 13px; color: #555; }
 
 .mt-stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
-@media (max-width: 600px) { .mt-stats-row { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 600px) {
+  .mt-stats-row { grid-template-columns: repeat(2, 1fr); }
+
+  /* Card top row: stack title + badge */
+  .mt-card-top { flex-wrap: wrap; gap: 8px; align-items: flex-start; }
+  .mt-card-right { flex-direction: row; align-items: center; gap: 8px; }
+  .mt-card-main { width: 100%; }
+  .mt-card-title { font-size: 13px; }
+
+  /* Actions: full-width buttons */
+  .mt-actions { flex-direction: column; }
+  .mt-btn-accept, .mt-btn-start, .mt-btn-proof, .mt-btn-decline { width: 100%; text-align: center; }
+
+  /* Modal: bottom sheet on mobile */
+  .mt-modal-overlay { align-items: flex-end; padding: 0; }
+  .mt-modal { border-radius: 16px 16px 0 0; max-height: 90vh; }
+  .mt-modal-footer { flex-direction: column; }
+  .mt-modal-cancel, .mt-modal-submit { width: 100%; text-align: center; }
+}
 
 .mt-stat {
   background: #0d0d0d;

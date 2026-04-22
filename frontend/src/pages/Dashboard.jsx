@@ -109,6 +109,21 @@ export default function Dashboard({ user, onLogout, onRefreshUser }) {
             {renderPage()}
           </main>
         </div>
+
+        {/* ── Bottom Nav (mobile only) ── */}
+        <nav className="dash-bottom-nav">
+          {NAV.map((item) => (
+            <button
+              key={item.id}
+              className={`dash-bottom-nav-item ${activePage === item.id ? "active" : ""}`}
+              onClick={() => setActivePage(item.id)}
+            >
+              <span className="dash-bottom-nav-icon">{item.icon}</span>
+              <span>{item.label}</span>
+            </button>
+          ))}
+        </nav>
+
       </div>
       <ChatbotWidget user={user} />
     </NotificationProvider>

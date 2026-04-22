@@ -410,19 +410,81 @@
 /* ══════════════════════════════════════
    RESPONSIVE
 ══════════════════════════════════════ */
+
+/* Tablet */
 @media (max-width: 1000px) {
   .home-root { grid-template-columns: 1fr; }
   .home-right-col { display: grid; grid-template-columns: repeat(2, 1fr); }
   .home-stats-grid { grid-template-columns: repeat(4, 1fr); }
 }
+
+/* Mobile */
 @media (max-width: 700px) {
+  /* Hide sidebar, show bottom nav instead */
   :root { --sidebar-w: 0px; }
   .dash-sidebar { display: none; }
-  .dash-content { padding: 14px 14px 32px; }
-  .home-hero { flex-direction: column; }
+
+  /* Compensate for bottom nav bar */
+  .dash-content { padding: 12px 12px 88px; }
+  .dash-topbar  { padding: 0 14px; }
+
+  /* Home layout: single column */
+  .home-root    { grid-template-columns: 1fr; gap: 10px; }
+  .home-hero    { flex-direction: column; align-items: flex-start; gap: 10px; padding: 14px; }
   .home-hero-badge { display: none; }
-  .home-stats-grid { grid-template-columns: repeat(2, 1fr); }
+  .home-name    { font-size: 18px; }
+  .home-stats-grid   { grid-template-columns: repeat(2, 1fr); }
   .home-actions-grid { grid-template-columns: 1fr; }
-  .home-right-col { grid-template-columns: 1fr; }
-  .ao-grid { grid-template-columns: 1fr; }
+  .home-right-col    { grid-template-columns: 1fr; }
+  .ao-grid           { grid-template-columns: 1fr; }
+
+  /* Nudge card */
+  .home-nudge { flex-wrap: wrap; }
+  .home-nudge-btn { width: 100%; text-align: center; }
+}
+
+/* ── Bottom Navigation Bar (mobile only) ── */
+.dash-bottom-nav {
+  display: none;
+}
+@media (max-width: 700px) {
+  .dash-bottom-nav {
+    display: flex;
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    height: 64px;
+    background: rgba(10, 10, 14, 0.96);
+    border-top: 1px solid var(--border);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    z-index: 200;
+    padding: 0 4px;
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  .dash-bottom-nav-item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    background: none;
+    border: none;
+    color: var(--text-3);
+    font-family: inherit;
+    font-size: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 8px 4px;
+    border-radius: var(--radius);
+    transition: color 0.15s;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .dash-bottom-nav-item.active {
+    color: var(--accent);
+  }
+  .dash-bottom-nav-icon {
+    font-size: 18px;
+    line-height: 1;
+  }
 }

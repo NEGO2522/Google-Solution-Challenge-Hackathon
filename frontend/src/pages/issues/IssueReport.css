@@ -164,6 +164,15 @@
 
 @media (max-width: 700px) {
   .ir-layout { grid-template-columns: 1fr; }
-  .ir-map-wrapper { height: 240px; }
+  .ir-map-wrapper { height: 240px; min-height: 240px; }
   .ir-category-grid { grid-template-columns: repeat(2, 1fr); }
+  .ir-urgency-row { flex-wrap: wrap; gap: 6px; }
+  .ir-urgency-btn { flex: 1 1 calc(50% - 6px); }
+  .ir-ai-btn { width: 100%; justify-content: center; }
+  .ir-loc-actions { flex-direction: column; align-items: stretch; }
+  .ir-btn-loc { justify-content: center; }
+  .ir-header { padding: 10px 12px; }
+  .ir-header h2 { font-size: 13px; }
+  .ir-section { padding: 12px; }
+  .ir-root { padding-bottom: 16px; }
 }

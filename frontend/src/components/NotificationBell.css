@@ -51,6 +51,17 @@
   overflow: hidden;
   animation: nb-slide 0.2s ease;
 }
+@media (max-width: 400px) {
+  .nb-dropdown {
+    position: fixed;
+    top: auto;
+    bottom: 72px;
+    left: 8px;
+    right: 8px;
+    width: auto;
+    border-radius: 12px;
+  }
+}
 @keyframes nb-slide { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
 
 .nb-header {

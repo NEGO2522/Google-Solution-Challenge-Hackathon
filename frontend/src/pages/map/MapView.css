@@ -117,3 +117,33 @@
   .mv-map-wrapper { height:380px; }
   .mv-side-panel { width:100%;max-height:300px; }
 }
+
+@media (max-width:700px) {
+  .mv-root { gap: 8px; }
+
+  /* Stats bar: 2-col grid */
+  .mv-stats-bar { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; }
+  .mv-refresh-btn { grid-column: 1 / -1; margin-left: 0; justify-content: center; }
+
+  /* Filter bar: horizontal scroll strips */
+  .mv-filter-bar { flex-direction: column; gap: 10px; padding: 10px; }
+  .mv-filter-chips {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 2px;
+  }
+  .mv-chip { flex-shrink: 0; }
+
+  /* Map taller on mobile so pins are visible */
+  .mv-map-wrapper { height: 420px; }
+
+  /* Side panel: compact horizontal scroll list */
+  .mv-side-panel { max-height: 240px; }
+  .mv-issue-list { flex-direction: row; overflow-x: auto; overflow-y: hidden; flex-wrap: nowrap; padding: 6px; }
+  .mv-issue-card { min-width: 220px; flex-shrink: 0; }
+
+  /* Stats compact */
+  .mv-stat { min-width: unset; padding: 8px 10px; }
+  .mv-stat-num { font-size: 16px; }
+}
