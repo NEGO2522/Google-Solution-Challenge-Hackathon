@@ -148,7 +148,7 @@ Location: ${form.address || "(unknown)"}
 Rewrite the description to be clear, concise and actionable for NGO volunteers. Include: number of people affected (estimate if unknown), immediate needs, and any safety concerns. Keep it under 100 words. Return only the improved description text, nothing else.`;
 
       const res = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemma-2-9b-it:generateContent?key=${import.meta.env.VITE_GEMINI_API_KEY}`,
+        `https://generativelanguage.googleapis.com/v1beta/models/gemma-4-27b-it:generateContent?key=${import.meta.env.VITE_GEMINI_API_KEY}`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -164,7 +164,7 @@ Rewrite the description to be clear, concise and actionable for NGO volunteers. 
         const fallback = buildFallbackDescription(form);
         if (fallback) {
           update("description", fallback);
-          alert("⚠️ Gemma rate limit reached — applied a smart local template instead. Try AI again in 60s.");
+          alert("⚠️ Gemma 4 rate limit reached — applied a smart local template instead. Try AI again in 60s.");
         } else {
           alert("Gemma rate limit reached. Please wait 60 seconds and try again.");
         }
@@ -175,7 +175,7 @@ Rewrite the description to be clear, concise and actionable for NGO volunteers. 
       const data = await res.json();
       const improved = data?.candidates?.[0]?.content?.parts?.[0]?.text;
       if (improved) update("description", improved.trim());
-      else alert("Gemma didn't return a response. Try again.");
+      else alert("Gemma 4 didn't return a response. Try again.");
     } catch (err) {
       alert("AI enhancement failed: " + err.message);
     }
@@ -251,10 +251,10 @@ Rewrite the description to be clear, concise and actionable for NGO volunteers. 
                   placeholder="Number of people affected, immediate needs…" rows={4} />
                 <button type="button" className="ir-ai-btn" onClick={enhanceWithAI} disabled={enhancing || aiCooldown > 0}>
                   {enhancing
-                    ? <><span className="ir-ai-spinner"/>Gemma is enhancing…</>
+                    ? <><span className="ir-ai-spinner"/>Gemma 4 is enhancing…</>
                     : aiCooldown > 0
                     ? `⏳ Rate limited — retry in ${aiCooldown}s`
-                    : "✨ Enhance with Gemma AI"}
+                    : "✨ Enhance with Gemma 4 AI"}
                 </button>
               </div>
               <div className="ir-field">

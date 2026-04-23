@@ -33,8 +33,8 @@ The following steps walk through the **complete end-to-end lifecycle** of a cris
 ### Step 1 — NGO Admin: Report a Crisis
 - Admin logs in and opens the **Issue Report** form
 - Drops a GPS pin on the live **Leaflet crisis map** for the crisis location
-- Types a rough description → clicks **"Enhance with Gemini AI"**
-- Gemini 2.0 Flash rewrites it into a structured, actionable crisis brief in real time
+- Types a rough description → clicks **"Enhance with Gemma 4 AI"**
+- Gemma 4 (`gemma-4-27b-it`) rewrites it into a structured, actionable crisis brief in real time
 - Admin submits the issue (urgency: **Critical**, category: **Medical**)
 
 ### Step 2 — Smart Match Engine Runs
@@ -71,7 +71,7 @@ The following steps walk through the **complete end-to-end lifecycle** of a cris
 | Dashboard Overview | ![Dashboard](./screenshots/01-dashboard.png) |
 | Live Crisis Map | ![Live Map](./screenshots/02-live-map.png) |
 | Smart Match Engine | ![Smart Match](./screenshots/03-smart-match.png) |
-| Issue Report + Gemini AI | ![Issue Report](./screenshots/04-issue-report.png) |
+| Issue Report + Gemma 4 AI | ![Issue Report](./screenshots/04-issue-report.png) |
 
 ---
 
@@ -79,7 +79,7 @@ The following steps walk through the **complete end-to-end lifecycle** of a cris
 
 | Feature | What to Notice |
 |---|---|
-| Gemini AI enhancement | Raw description → structured crisis brief in ~1 second |
+| Gemma 4 AI enhancement | Raw description → structured crisis brief in ~1 second (model: `gemma-4-27b-it`) |
 | Smart Match scores | PostGIS running a weighted geospatial query live |
 | Realtime notifications | Notification bell updates on Volunteer dashboard without a page refresh |
 | Trust Score update | Re-renders immediately after admin submits a rating |
@@ -114,6 +114,7 @@ Full setup instructions in [README.md](./README.md).
 | Goal | How VolunteerBridge Helps |
 |---|---|
 | **SDG 11** — Sustainable Cities & Communities | Faster, smarter community crisis response through AI dispatch |
+| **SDG 3** — Good Health and Well-Being | Faster medical volunteer dispatch to those in need |
 | **SDG 13** — Climate Action | Coordinates disaster relief volunteers during climate-linked emergencies |
 | **SDG 17** — Partnerships for the Goals | Bridges NGOs and volunteers into a unified, accountable network |
 
@@ -121,9 +122,10 @@ Full setup instructions in [README.md](./README.md).
 
 ## Google Technologies in the Demo
 
-- **Gemini 2.0 Flash** — Live in Steps 1 and throughout via the in-app chatbot
+- **Gemma 4 (`gemma-4-27b-it`)** — Live in Steps 1 and throughout via the in-app chatbot
 - **Firebase Hosting** — Powers the production deployment
 - **Leaflet Maps** — The geospatial crisis map visible throughout
+- **Supabase + PostGIS** — Real-time volunteer matching and data sync
 
 ---
 

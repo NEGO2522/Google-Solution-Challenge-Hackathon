@@ -4,7 +4,7 @@
 
 [![React](https://img.shields.io/badge/React-19-61DAFB?logo=react)](https://react.dev)
 [![Supabase](https://img.shields.io/badge/Supabase-Postgres%20%2B%20Realtime-3ECF8E?logo=supabase)](https://supabase.com)
-[![Gemini](https://img.shields.io/badge/Google%20Gemini-2.0%20Flash-4285F4?logo=google)](https://ai.google.dev)
+[![Gemma](https://img.shields.io/badge/Google%20Gemma-4%20(27B)-4285F4?logo=google)](https://ai.google.dev/gemma)
 [![PostGIS](https://img.shields.io/badge/PostGIS-Geospatial-336791)](https://postgis.net)
 [![PWA](https://img.shields.io/badge/PWA-Installable-5A0FC8?logo=pwa)](https://web.dev/progressive-web-apps/)
 
@@ -31,7 +31,7 @@ VolunteerBridge is a full-stack AI platform that intelligently matches verified 
 |---|---|
 | ![Dashboard](./screenshots/01-dashboard.png) | ![Live Map](./screenshots/02-live-map.png) |
 
-| Smart Match Engine | Issue Report + Gemini AI |
+| Smart Match Engine | Issue Report + Gemma 4 AI |
 |---|---|
 | ![Smart Match](./screenshots/03-smart-match.png) | ![Issue Report](./screenshots/04-issue-report.png) |
 
@@ -70,7 +70,7 @@ This compresses what used to take hours of phone coordination into a few seconds
 | Task Lifecycle | Full accept to start to proof submission to resolved pipeline with Supabase Realtime sync |
 | Trust Score System | Auto-recalculated via `recalculate_trust_score()` RPC after each task completion |
 | Real-time Notifications | Supabase Realtime pushes task assignments, approvals, and resolution alerts |
-| Gemini AI Integration | Issue description enhancement via Gemini 2.0 Flash + Gemini-powered in-app chatbot assistant |
+| Gemma 4 AI Integration | Issue description enhancement via Gemma 4 (`gemma-4-27b-it`) + Gemma-powered in-app chatbot assistant |
 | Admin Console | Issues table, volunteer roster, approval queue, and smart match panel in one dashboard |
 | Rating System | Admins rate volunteers post-task; ratings feed directly into trust score recalculation |
 | PWA / Installable | `vite-plugin-pwa` — installable on Android & iOS home screen, offline map tile cache, 3 app shortcuts |
@@ -102,7 +102,7 @@ This ensures the most qualified, closest, and most reliable volunteers are alway
 | Frontend | React 19 + Vite 8 |
 | Styling | Tailwind CSS 4 + custom CSS modules |
 | Maps | React Leaflet + Leaflet.js (dark CartoDB tiles) |
-| AI | Google Gemini 2.0 Flash (issue enhancement + chatbot) |
+| AI | Google Gemma 4 — `gemma-4-27b-it` via Gemini API (issue enhancement + chatbot) |
 | Backend & Auth | Supabase — Postgres, PostGIS, Auth, Realtime, Storage |
 | Geospatial | PostGIS `GEOGRAPHY(POINT, 4326)` + `ST_DWithin` + `ST_Distance` |
 | PWA | `vite-plugin-pwa` — Web App Manifest, Workbox service worker, offline caching |
@@ -137,7 +137,7 @@ Google-Solution-Challenge-Hackathon/
 │   │   │   ├── auth/
 │   │   │   │   └── AuthPage.jsx        # Login + signup with role selection
 │   │   │   ├── issues/
-│   │   │   │   └── IssueReport.jsx     # Crisis report form with map pin + Gemini AI enhance
+│   │   │   │   └── IssueReport.jsx     # Crisis report form with map pin + Gemma 4 AI enhance
 │   │   │   ├── map/
 │   │   │   │   └── MapView.jsx         # Live crisis map with filters, radius, side panel
 │   │   │   ├── volunteer/
@@ -167,7 +167,7 @@ Google-Solution-Challenge-Hackathon/
 
 - Node.js v18+
 - A [Supabase](https://supabase.com) project with the **PostGIS** extension enabled
-- A [Google AI Studio](https://aistudio.google.com) API key for Gemini
+- A [Google AI Studio](https://aistudio.google.com) API key (to access **Gemma 4** via the Gemini API)
 
 ### 1. Clone the repository
 
@@ -194,7 +194,7 @@ Create a `.env` file inside `frontend/`:
 ```env
 VITE_SUPABASE_URL=your_supabase_project_url
 VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
-VITE_GEMINI_API_KEY=your_google_gemini_api_key
+VITE_GEMINI_API_KEY=your_google_gemini_api_key  # Used to call gemma-4-27b-it
 ```
 
 Never commit this file. It is already covered by `.gitignore`.
@@ -242,6 +242,7 @@ Key PostgreSQL functions:
 ## UN Sustainable Development Goals
 
 - **SDG 11** — Sustainable Cities and Communities (faster community crisis response)
+- **SDG 3** — Good Health and Well-Being (faster medical volunteer dispatch)
 - **SDG 13** — Climate Action (disaster relief volunteer coordination)
 - **SDG 17** — Partnerships for the Goals (NGO and volunteer network)
 
@@ -249,9 +250,10 @@ Key PostgreSQL functions:
 
 ## Google Technologies Used
 
-- **Gemini 2.0 Flash** — AI-powered issue description enhancement and in-app chatbot
+- **Gemma 4 (`gemma-4-27b-it`)** — AI-powered issue description enhancement and in-app chatbot, accessed via the Gemini API
 - **Firebase Hosting** — Production deployment target
 - **Leaflet Maps** — Geospatial crisis mapping
+- **Supabase + PostGIS** — Real-time geospatial volunteer matching
 
 ---
 

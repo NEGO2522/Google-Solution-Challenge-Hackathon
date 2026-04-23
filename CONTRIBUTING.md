@@ -121,7 +121,7 @@ Key areas to understand before contributing:
 |---|---|
 | `frontend/src/pages/admin/AdminDashboard.jsx` | Full admin panel — issues, volunteers, approvals, smart match |
 | `frontend/src/pages/volunteer/MyTasks.jsx` | Volunteer task lifecycle |
-| `frontend/src/pages/issues/IssueReport.jsx` | Issue reporting form with Gemini AI enhancement |
+| `frontend/src/pages/issues/IssueReport.jsx` | Issue reporting form with Gemma 4 AI enhancement |
 | `frontend/src/pages/map/MapView.jsx` | Live crisis map |
 | `frontend/src/context/NotificationContext.jsx` | Real-time notifications via Supabase |
 | `supabase_FULL_SETUP.sql` | Full DB schema + RLS + PostGIS matching functions |
