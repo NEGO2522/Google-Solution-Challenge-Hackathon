@@ -104,6 +104,19 @@ export default function AuthPage({ onAuthSuccess }) {
     setLoading(false);
   };
 
+  const fillDemo = (demoRole) => {
+    const email = demoRole === "ngo_admin"
+      ? "admin@demo.volunteerbridge.in"
+      : "volunteer@demo.volunteerbridge.in";
+    setMode("login");
+    setStep(1);
+    setErrors({});
+    setServerError("");
+    setEmailSent(false);
+    setRole(demoRole);
+    setForm(p => ({ ...p, email, password: "Demo@1234" }));
+  };
+
   const reset = (newMode) => {
     setMode(newMode); setStep(1); setErrors({}); setServerError(""); setEmailSent(false);
     setForm({ name:"", email:"", password:"", confirmPassword:"",
@@ -187,6 +200,43 @@ export default function AuthPage({ onAuthSuccess }) {
                     : "Complete your volunteer profile."}
             </p>
           </div>
+
+          {/* Demo credentials box — login mode only */}
+          {isLogin && (
+            <div className="a-demo-box">
+              <div className="a-demo-header">
+                <span className="a-demo-badge">🎯 Demo</span>
+                <span className="a-demo-title">Try with test accounts</span>
+              </div>
+              <div className="a-demo-accounts">
+                <button
+                  type="button"
+                  className="a-demo-account"
+                  onClick={() => fillDemo("volunteer")}
+                >
+                  <div className="a-demo-role-icon">🙋</div>
+                  <div className="a-demo-info">
+                    <span className="a-demo-role">Volunteer</span>
+                    <span className="a-demo-email">volunteer@demo.volunteerbridge.in</span>
+                  </div>
+                  <span className="a-demo-fill">Fill →</span>
+                </button>
+                <button
+                  type="button"
+                  className="a-demo-account"
+                  onClick={() => fillDemo("ngo_admin")}
+                >
+                  <div className="a-demo-role-icon">🏢</div>
+                  <div className="a-demo-info">
+                    <span className="a-demo-role">NGO Admin</span>
+                    <span className="a-demo-email">admin@demo.volunteerbridge.in</span>
+                  </div>
+                  <span className="a-demo-fill">Fill →</span>
+                </button>
+              </div>
+              <p className="a-demo-pw">Password for both: <strong>Demo@1234</strong></p>
+            </div>
+          )}
 
           {/* Role picker */}
           <div className="a-role-row">
