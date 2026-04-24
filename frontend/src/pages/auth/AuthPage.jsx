@@ -82,14 +82,49 @@ export default function AuthPage({ onAuthSuccess }) {
   };
 
   const handleLogin = async () => {
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email: form.email, password: form.password,
+    const isDemoAdmin = form.email === "admin@demo.volunteerbridge.in" && form.password === "Demo@1234";
+    const isDemoVol = form.email === "volunteer@demo.volunteerbridge.in" && form.password === "Demo@1234";
+
+    let authEmail = form.email;
+    if (isDemoAdmin) authEmail = "vb_demo_admin@example.com";
+    if (isDemoVol) authEmail = "vb_demo_vol@example.com";
+
+    let { data, error } = await supabase.auth.signInWithPassword({
+      email: authEmail, password: form.password,
     });
+
+    if (error && error.message.includes("Invalid login credentials")) {
+      if (isDemoAdmin || isDemoVol) {
+        const meta = isDemoAdmin
+          ? { name: "Demo Admin", role: "ngo_admin", ngoName: "Demo Foundation", ngoCity: "Demo City" }
+          : { name: "Demo Volunteer", role: "volunteer", city: "Demo City", availability: "Weekends Only", skills: ["Medical Aid", "Teaching"] };
+          
+        const res = await supabase.auth.signUp({
+          email: authEmail, password: form.password,
+          options: { data: meta }
+        });
+        
+        if (!res.error && res.data.session) {
+          data = res.data;
+          error = null;
+        } else {
+          // Fallback to mocked session for hackathon demo
+          console.warn("Fallback to mock session for demo account:", res.error?.message || "Email confirmation required");
+          onAuthSuccess({
+            id: isDemoAdmin ? "mock-admin-id-1234" : "mock-vol-id-1234",
+            email: form.email,
+            ...meta
+          });
+          return;
+        }
+      }
+    }
+
     if (error) { setServerError(error.message); return; }
     const meta = data.user.user_metadata || {};
     onAuthSuccess({
-      id: data.user.id, email: data.user.email,
-      name: meta.name || data.user.email.split("@")[0],
+      id: data.user.id, email: form.email, // keep displayed email
+      name: meta.name || form.email.split("@")[0],
       role: meta.role || role, ...meta,
     });
   };
