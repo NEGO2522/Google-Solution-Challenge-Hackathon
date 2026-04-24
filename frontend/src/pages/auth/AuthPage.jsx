@@ -371,6 +371,26 @@ export default function AuthPage({ onAuthSuccess }) {
             </button>
           </p>
 
+          {isLogin && (
+            <div className="a-demo-creds">
+              <div className="a-demo-title">Demo Credentials</div>
+              <div className="a-demo-grid">
+                <div>
+                  <strong>Admin</strong>
+                  <span>admin@demo.volunteerbridge.in</span>
+                </div>
+                <div>
+                  <strong>Volunteer</strong>
+                  <span>volunteer@demo.volunteerbridge.in</span>
+                </div>
+                <div>
+                  <strong>Password (Both)</strong>
+                  <span>Demo@1234</span>
+                </div>
+              </div>
+            </div>
+          )}
+
         </div>
       </div>
     </div>
