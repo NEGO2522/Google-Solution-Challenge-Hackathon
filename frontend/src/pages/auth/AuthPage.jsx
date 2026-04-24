@@ -110,6 +110,7 @@ export default function AuthPage({ onAuthSuccess }) {
         } else {
           // Fallback to mocked session for hackathon demo
           console.warn("Fallback to mock session for demo account:", res.error?.message || "Email confirmation required");
+          localStorage.setItem("DEMO_MODE", "true");
           onAuthSuccess({
             id: isDemoAdmin ? "mock-admin-id-1234" : "mock-vol-id-1234",
             email: form.email,
@@ -121,6 +122,7 @@ export default function AuthPage({ onAuthSuccess }) {
     }
 
     if (error) { setServerError(error.message); return; }
+    localStorage.removeItem("DEMO_MODE");
     const meta = data.user.user_metadata || {};
     onAuthSuccess({
       id: data.user.id, email: form.email, // keep displayed email

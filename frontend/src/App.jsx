@@ -155,6 +155,7 @@ export default function App() {
   };
 
   const handleLogout = async () => {
+    localStorage.removeItem("DEMO_MODE");
     await supabase.auth.signOut();
     setUser(null);
     setPage("auth");
